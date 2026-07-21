@@ -550,6 +550,7 @@ const Dashboard = () => {
                       >
                         Manage →
                       </Link>
+                    </div>
                   </div>
                 ))}
               </div>
