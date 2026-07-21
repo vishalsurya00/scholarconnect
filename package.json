@@ -1,0 +1,11 @@
+{
+  "name": "scholarconnect-root",
+  "version": "1.0.0",
+  "description": "ScholarConnect - Scholarship discovery platform for Indian students",
+  "scripts": {
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "install-all": "npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client run build"
+  }
+}
