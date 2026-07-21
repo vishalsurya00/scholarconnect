@@ -1,13 +1,46 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext(null);
+const TOKEN_KEY = 'scholarconnect_token';
 
 export const AuthProvider = ({ children }) => {
-  // In-memory state for JWT token and current user per user prompt requirements
+  // In-memory state for JWT token and current user, initialized with sessionStorage backup
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  // Check sessionStorage for token on initial app load
+  useEffect(() => {
+    const verifySession = async () => {
+      const storedToken = sessionStorage.getItem(TOKEN_KEY);
+      if (storedToken) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            },
+          });
+          const resData = await response.json();
+
+          if (response.ok && resData.success && resData.user) {
+            setToken(storedToken);
+            setUser(resData.user);
+          } else {
+            console.warn('[AuthContext]: Stored token invalid or expired. Clearing session.');
+            sessionStorage.removeItem(TOKEN_KEY);
+          }
+        } catch (err) {
+          console.error('[AuthContext]: Session verification network error:', err);
+          sessionStorage.removeItem(TOKEN_KEY);
+        }
+      }
+      setInitialLoading(false);
+    };
+
+    verifySession();
+  }, []);
 
   /**
    * Register a new student
@@ -30,7 +63,8 @@ export const AuthProvider = ({ children }) => {
         throw new Error(resData.message || 'Registration failed.');
       }
 
-      // Store JWT token and user info in React state (in-memory)
+      // Store JWT token in sessionStorage (tab lifetime) and React state
+      sessionStorage.setItem(TOKEN_KEY, resData.token);
       setToken(resData.token);
       setUser(resData.user);
 
@@ -65,7 +99,8 @@ export const AuthProvider = ({ children }) => {
         throw new Error(resData.message || 'Login failed.');
       }
 
-      // Store JWT token and user info in React state (in-memory)
+      // Store JWT token in sessionStorage (tab lifetime) and React state
+      sessionStorage.setItem(TOKEN_KEY, resData.token);
       setToken(resData.token);
       setUser(resData.user);
 
@@ -108,12 +143,37 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Logout user by clearing state
+   * Logout user by clearing state and sessionStorage
    */
   const logout = () => {
+    sessionStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
   };
+
+  if (initialLoading) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justify: 'center',
+          backgroundColor: 'var(--gray-100)',
+          color: 'var(--primary-blue)',
+          fontFamily: 'var(--font-sans)',
+        }}
+      >
+        <div style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '8px' }}>
+          Scholar<span style={{ color: 'var(--accent-orange)' }}>Connect</span>
+        </div>
+        <div style={{ fontSize: '0.9rem', color: 'var(--gray-600)' }}>
+          Verifying student session...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider
