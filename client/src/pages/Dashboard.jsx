@@ -16,6 +16,9 @@ import {
   ArrowRight,
   Sparkles,
   AlertCircle,
+  Clock,
+  Bell,
+  BellOff,
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -24,6 +27,17 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [checklists, setChecklists] = useState([]);
   const [loadingChecklists, setLoadingChecklists] = useState(true);
+
+  // Reminders & Web Notification state
+  const [reminders, setReminders] = useState([]);
+  const [loadingReminders, setLoadingReminders] = useState(true);
+  const [showNotifBanner, setShowNotifBanner] = useState(() => {
+    return (
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'default' &&
+      sessionStorage.getItem('sc_notif_banner_dismissed') !== 'true'
+    );
+  });
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('sc_banner_dismissed') === 'true';
   });
@@ -109,11 +123,66 @@ const Dashboard = () => {
       }
     };
 
+    const fetchReminders = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/scholarships/reminders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (data.success && Array.isArray(data.reminders)) {
+          setReminders(data.reminders);
+          checkAndTriggerNotification(data.reminders);
+        }
+      } catch (err) {
+        console.error('[Dashboard Fetch Reminders Error]:', err);
+      } finally {
+        setLoadingReminders(false);
+      }
+    };
+
     if (token) {
       fetchProfile();
       fetchChecklists();
+      fetchReminders();
     }
   }, [token]);
+
+  const checkAndTriggerNotification = (remindersList) => {
+    if (
+      typeof Notification !== 'undefined' &&
+      Notification.permission === 'granted' &&
+      sessionStorage.getItem('sc_notif_triggered') !== 'true'
+    ) {
+      const urgentItem = remindersList.find((r) => r.daysRemaining <= 7);
+      if (urgentItem) {
+        sessionStorage.setItem('sc_notif_triggered', 'true');
+        try {
+          new Notification('ScholarConnect Deadline Alert 🎓', {
+            body: `Urgent: "${urgentItem.name}" closes in ${urgentItem.daysRemaining} day${urgentItem.daysRemaining === 1 ? '' : 's'}!`,
+          });
+        } catch (err) {
+          console.error('[Notification Error]:', err);
+        }
+      }
+    }
+  };
+
+  const handleEnableNotifications = async () => {
+    if (typeof Notification !== 'undefined') {
+      const permission = await Notification.requestPermission();
+      setShowNotifBanner(false);
+      if (permission === 'granted' && reminders.length > 0) {
+        checkAndTriggerNotification(reminders);
+      }
+    }
+  };
+
+  const handleDismissNotifBanner = () => {
+    setShowNotifBanner(false);
+    sessionStorage.setItem('sc_notif_banner_dismissed', 'true');
+  };
 
   const completeness = profile?.profileCompleteness || 0;
 
@@ -458,8 +527,143 @@ const Dashboard = () => {
                 )}
               </div>
 
+          {/* Web Notification Permission Prompt Banner */}
+          {showNotifBanner && (
+            <div
+              className="alert alert-info"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '20px',
+                padding: '14px 20px',
+                background: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)',
+                border: '1.5px solid var(--primary-blue)',
+                borderRadius: 'var(--radius-md)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Bell size={22} style={{ color: 'var(--primary-blue)', flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontWeight: 700, color: 'var(--primary-blue)', fontSize: '0.94rem' }}>
+                    Enable deadline alerts?
+                  </div>
+                  <div style={{ fontSize: '0.84rem', color: 'var(--gray-700)' }}>
+                    Get instant browser notifications for urgent scholarship deadlines closing within 7 days.
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <button onClick={handleEnableNotifications} className="btn btn-primary btn-sm">
+                  Enable Alerts
+                </button>
+                <button
+                  onClick={handleDismissNotifBanner}
+                  style={{ background: 'transparent', color: 'var(--gray-500)', cursor: 'pointer', border: 'none' }}
+                  title="Dismiss alert prompt"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Upcoming Deadlines Card Section */}
+          <div className="sc-card" style={{ marginTop: '24px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Clock size={22} style={{ color: 'var(--accent-orange)' }} />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-blue)' }}>
+                  Upcoming Deadlines
+                </h3>
+              </div>
+
+              <Link to="/scholarships" style={{ fontWeight: 600, color: 'var(--primary-blue)', fontSize: '0.88rem' }}>
+                View All Schemes →
+              </Link>
             </div>
 
+            {loadingReminders ? (
+              <div style={{ color: 'var(--gray-500)', fontSize: '0.9rem', padding: '20px 0' }}>
+                Loading upcoming deadlines...
+              </div>
+            ) : reminders.length === 0 ? (
+              /* Informational Empty State */
+              <div
+                style={{
+                  padding: '16px 20px',
+                  backgroundColor: 'var(--gray-100)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--gray-600)',
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                <Clock size={18} style={{ color: 'var(--gray-500)' }} />
+                <span>No urgent deadlines right now — check back soon.</span>
+              </div>
+            ) : (
+              /* Top 5 Upcoming Deadlines */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {reminders.slice(0, 5).map((item) => {
+                  let badgeStyle = { backgroundColor: '#fef9c3', color: '#854d0e', border: '1px solid #fef08a', fontWeight: 600 };
+                  let badgeText = `${item.daysRemaining} days left`;
+
+                  if (item.daysRemaining <= 7) {
+                    badgeStyle = { backgroundColor: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: 700 };
+                    badgeText = `${item.daysRemaining} ${item.daysRemaining === 1 ? 'day' : 'days'} left (Urgent)`;
+                  } else if (item.daysRemaining <= 15) {
+                    badgeStyle = { backgroundColor: '#ffedd5', color: '#c2410c', border: '1px solid #fed7aa', fontWeight: 600 };
+                  }
+
+                  return (
+                    <div
+                      key={item._id}
+                      style={{
+                        display: 'flex',
+                        justify: 'space-between',
+                        alignItems: 'center',
+                        padding: '12px 16px',
+                        backgroundColor: item.daysRemaining <= 7 ? '#fff5f5' : 'var(--gray-100)',
+                        border: item.daysRemaining <= 7 ? '1px solid #fecaca' : '1px solid var(--gray-200)',
+                        borderRadius: 'var(--radius-sm)',
+                        flexWrap: 'wrap',
+                        gap: '10px',
+                      }}
+                    >
+                      <div>
+                        <Link
+                          to={`/scholarships/${item._id}`}
+                          style={{ fontWeight: 700, color: 'var(--gray-900)', textDecoration: 'none', fontSize: '0.94rem' }}
+                        >
+                          {item.name}
+                        </Link>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--gray-500)', marginTop: '2px' }}>
+                          Issuing Body: {item.issuingBody} • State: {item.state}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        <span className="badge" style={{ ...badgeStyle, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <Clock size={13} /> {badgeText}
+                        </span>
+
+                        <Link
+                          to={`/scholarships/${item._id}`}
+                          className="btn btn-outline btn-sm"
+                          style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+                        >
+                          View Details →
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Your Application Tracker Card Section */}

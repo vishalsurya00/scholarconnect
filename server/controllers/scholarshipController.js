@@ -1,5 +1,7 @@
 const Scholarship = require('../models/Scholarship');
 const StudentProfile = require('../models/StudentProfile');
+const DocumentChecklist = require('../models/DocumentChecklist');
+const { getDaysRemaining } = require('../utils/dateUtils');
 
 // Real verified Indian government scholarships for offline fallback
 const FALLBACK_SCHOLARSHIPS = [
@@ -681,8 +683,91 @@ const getScholarshipById = async (req, res) => {
   }
 };
 
+/**
+ * @route   GET /api/scholarships/reminders
+ * @desc    Fetch scholarships with deadlines in the next 30 days for eligible or interacted schemes
+ * @access  Private (JWT)
+ */
+const getDeadlineReminders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Fetch user profile
+    let profile = null;
+    try {
+      profile = await StudentProfile.findOne({ userId });
+    } catch (err) {
+      // ignore db error
+    }
+    if (!profile) {
+      profile = { academic: {}, economic: {}, location: {}, personal: {}, specialCategories: {} };
+    }
+
+    // Fetch user interacted checklist IDs
+    let userChecklistScholarshipIds = [];
+    try {
+      const userChecklists = await DocumentChecklist.find({ userId });
+      userChecklistScholarshipIds = userChecklists.map((c) => String(c.scholarshipId));
+    } catch (err) {
+      // ignore db error
+    }
+
+    // Fetch all active scholarships
+    let scholarships = [];
+    try {
+      scholarships = await Scholarship.find({ isActive: true });
+    } catch (err) {
+      scholarships = FALLBACK_SCHOLARSHIPS;
+    }
+
+    if (!scholarships || scholarships.length === 0) {
+      scholarships = FALLBACK_SCHOLARSHIPS;
+    }
+
+    const reminders = [];
+
+    scholarships.forEach((item) => {
+      const plainItem = typeof item.toObject === 'function' ? item.toObject() : item;
+      const daysLeft = getDaysRemaining(plainItem.deadline);
+
+      // Condition B: Deadline is within next 30 days
+      if (daysLeft > 0 && daysLeft <= 30) {
+        const matchResult = evaluateScholarshipMatch(plainItem, profile);
+        const hasChecklistEntry = userChecklistScholarshipIds.includes(String(plainItem._id));
+
+        // Condition A: Student has eligible match OR has an existing checklist entry
+        if (matchResult.status === 'eligible' || hasChecklistEntry) {
+          reminders.push({
+            ...plainItem,
+            daysRemaining: daysLeft,
+            matchStatus: matchResult.status,
+            hasChecklistEntry,
+          });
+        }
+      }
+    });
+
+    // Sort by deadline (soonest days remaining first)
+    reminders.sort((a, b) => a.daysRemaining - b.daysRemaining);
+
+    return res.status(200).json({
+      success: true,
+      count: reminders.length,
+      reminders,
+    });
+  } catch (error) {
+    console.error('[Get Deadline Reminders Error]:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch deadline reminders.',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllScholarships,
   getMatchedScholarships,
   getScholarshipById,
+  getDeadlineReminders,
 };

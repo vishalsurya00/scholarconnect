@@ -650,11 +650,27 @@ const Scholarships = () => {
                       {item.issuingBody}
                     </span>
 
-                    {daysRemaining !== null && (
-                      <span className="badge badge-days-left">
-                        <Clock size={13} /> {daysRemaining} days to go
-                      </span>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      {daysRemaining !== null && daysRemaining <= 7 && (
+                        <span
+                          className="badge"
+                          style={{
+                            backgroundColor: '#fee2e2',
+                            color: '#dc2626',
+                            border: '1px solid #fca5a5',
+                            fontWeight: 800,
+                          }}
+                        >
+                          Urgent
+                        </span>
+                      )}
+
+                      {daysRemaining !== null && (
+                        <span className="badge badge-days-left">
+                          <Clock size={13} /> {daysRemaining} days to go
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Featured Badge */}

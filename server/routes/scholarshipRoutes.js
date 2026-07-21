@@ -4,15 +4,16 @@ const {
   getAllScholarships,
   getMatchedScholarships,
   getScholarshipById,
+  getDeadlineReminders,
 } = require('../controllers/scholarshipController');
 const { protect } = require('../middleware/authMiddleware');
 
 // Public route to fetch all scholarships
 router.get('/', getAllScholarships);
 
-// Protected route to compute personalized 3-tier matches for logged-in user
-// (Must be defined before /:id)
+// Protected routes (Must be defined before /:id)
 router.get('/matched', protect, getMatchedScholarships);
+router.get('/reminders', protect, getDeadlineReminders);
 
 // Public route to fetch single scholarship by ID
 router.get('/:id', getScholarshipById);
