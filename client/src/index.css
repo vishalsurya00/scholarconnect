@@ -564,15 +564,241 @@ button {
   color: var(--gray-500);
 }
 
-/* Responsive Utilities */
+/* Language Switcher & Navbar Additions */
+.lang-switcher-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--gray-100);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300);
+}
+
+.lang-select-input {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  cursor: pointer;
+  outline: none;
+}
+
+.mobile-hamburger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--primary-blue);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
+.mobile-menu-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #ffffff;
+  border-bottom: 2px solid var(--gray-200);
+  padding: 16px 20px 24px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  animation: slideDown 0.2s ease-out;
+}
+
+.mobile-drawer-lang {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.mobile-user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--gray-100);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  color: var(--gray-800);
+}
+
+.mobile-nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-nav-links a {
+  display: block;
+  padding: 10px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
+  background-color: var(--primary-blue-light);
+  color: var(--primary-blue);
+}
+
+.mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dashboard Grid Classes */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+
+.dashboard-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Global Viewport Guard */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Comprehensive Responsive Rules */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none; /* Can add mobile drawer in later step */
+  .desktop-nav,
+  .desktop-auth-buttons {
+    display: none !important;
   }
 
+  .mobile-hamburger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .container, .container-narrow {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Navbar height */
+  .navbar-container {
+    height: 64px;
+  }
+
+  /* Dashboard Hero Banner Fix */
+  .dashboard-hero {
+    padding: 24px 0;
+  }
+
+  .dashboard-user-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .dashboard-user-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dashboard-user-actions .btn {
+    flex: 1;
+    min-width: 130px;
+    min-height: 44px;
+  }
+
+  .dashboard-main-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Footer */
   .footer-grid {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
+  }
+
+  /* Buttons & Inputs Touch Targets */
+  .btn {
+    min-height: 44px;
+  }
+
+  .form-input, .form-select {
+    min-height: 44px;
+  }
+
+  .sc-card {
+    padding: 20px 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .profile-steps-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .profile-actions-row {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .profile-actions-row > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .profile-actions-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: 1.8rem !important;
+  }
+
+  h2 {
+    font-size: 1.4rem !important;
+  }
+
+  h3 {
+    font-size: 1.15rem !important;
   }
 }
 
@@ -582,8 +808,7 @@ button {
   }
   
   .auth-card {
-    border-radius: 0;
-    box-shadow: none;
-    border: none;
+    border-radius: var(--radius-sm);
+    padding: 24px 16px;
   }
 }

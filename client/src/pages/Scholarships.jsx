@@ -419,6 +419,7 @@ const Scholarships = () => {
               marginBottom: '20px',
               borderBottom: '2px solid var(--gray-200)',
               paddingBottom: '2px',
+              flexWrap: 'wrap',
             }}
           >
             <button
@@ -637,7 +638,7 @@ const Scholarships = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
               gap: '24px',
             }}
           >

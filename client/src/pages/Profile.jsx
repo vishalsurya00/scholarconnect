@@ -325,7 +325,7 @@ const Profile = () => {
         <div className="sc-card" style={{ padding: '32px' }}>
           
           {/* Wizard Step Navigation Tabs */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid var(--gray-200)', paddingBottom: '16px', marginBottom: '32px' }}>
+          <div className="profile-steps-header" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid var(--gray-200)', paddingBottom: '16px', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
             <div
               onClick={() => setCurrentStep(1)}
               style={{
@@ -394,7 +394,7 @@ const Profile = () => {
                 Step 1 of 3: Core Eligibility Criteria
               </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+              <div className="profile-form-grid">
                 {/* Current Class */}
                 <div className="form-group">
                   <label className="form-label">Current Class / Education Level *</label>
@@ -693,7 +693,7 @@ const Profile = () => {
           )}
 
           {/* Action Buttons Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '36px', paddingTop: '20px', borderTop: '1px solid var(--gray-200)' }}>
+          <div className="profile-actions-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '36px', paddingTop: '20px', borderTop: '1px solid var(--gray-200)', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               {currentStep > 1 && (
                 <button type="button" onClick={handleBack} className="btn btn-secondary" disabled={saving}>

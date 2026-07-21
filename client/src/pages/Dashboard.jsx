@@ -208,7 +208,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div className="dashboard-user-actions">
               <Link to="/profile" className="btn btn-accent btn-sm">
                 <Edit3 size={15} /> {t('dashboard.editProfile')}
               </Link>
@@ -270,7 +270,7 @@ const Dashboard = () => {
               ></div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.86rem', color: 'var(--gray-600)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.86rem', color: 'var(--gray-600)', flexWrap: 'wrap', gap: '8px' }}>
               <span>
                 {t('profile.bannerText', { percent: completeness })}
               </span>
@@ -283,15 +283,17 @@ const Dashboard = () => {
           {/* Dismissible Banner */}
           {!bannerDismissed && completeness < 90 && (
             <div
-              className="alert alert-info"
+              className="alert alert-info responsive-alert-banner"
               style={{
                 display: 'flex',
-                justify: 'space-between',
+                justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: '28px',
                 padding: '16px 20px',
                 background: 'linear-gradient(135deg, #eef3ff 0%, #fff7ed 100%)',
                 border: '1.5px solid var(--accent-orange)',
+                flexWrap: 'wrap',
+                gap: '12px',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -322,7 +324,7 @@ const Dashboard = () => {
           )}
 
           {/* Main Grid: Account Details & Profile Summary */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+          <div className="dashboard-main-grid">
             
             {/* Account Details Card */}
             <div className="sc-card">
@@ -457,7 +459,7 @@ const Dashboard = () => {
               {loading ? (
                 <div style={{ color: 'var(--gray-500)', fontSize: '0.9rem' }}>Loading profile information...</div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.9rem' }}>
+                <div className="dashboard-summary-grid">
                   
                   <div style={{ background: 'var(--gray-100)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
                     <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.classLevel').toUpperCase()}</div>
