@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard } from 'lucide-react';
+import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
@@ -64,6 +64,11 @@ const Navbar = () => {
                 <User size={16} />
                 <span>{user?.fullName?.split(' ')[0] || 'Student'}</span>
               </span>
+
+              <Link to="/profile" className="btn btn-outline btn-sm">
+                <UserCheck size={16} />
+                <span>Profile</span>
+              </Link>
 
               <Link to="/dashboard" className="btn btn-outline btn-sm">
                 <LayoutDashboard size={16} />
