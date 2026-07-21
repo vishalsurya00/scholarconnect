@@ -231,6 +231,25 @@ const Scholarships = () => {
         </div>
       </section>
 
+      {/* Official Cycle Disclaimer Bar */}
+      <div
+        style={{
+          backgroundColor: '#fffbe6',
+          borderBottom: '1px solid #ffe58f',
+          padding: '10px 0',
+          fontSize: '0.86rem',
+          color: '#873800',
+          textAlign: 'center',
+        }}
+      >
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <AlertCircle size={15} style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
+          <span>
+            <strong>Notice:</strong> Dates shown reflect typical annual cycles — always confirm exact current-year deadlines on the official portal before applying.
+          </span>
+        </div>
+      </div>
+
       <div className="container" style={{ marginTop: '-24px' }}>
         {/* Guest Callout Banner */}
         {!isAuthenticated && (
