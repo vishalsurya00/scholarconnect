@@ -527,6 +527,10 @@ const Dashboard = () => {
                 )}
               </div>
 
+            </div>
+
+          </div>
+
           {/* Web Notification Permission Prompt Banner */}
           {showNotifBanner && (
             <div
