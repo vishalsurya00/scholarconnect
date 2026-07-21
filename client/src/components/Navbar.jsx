@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard, UserCheck, Globe, Menu, X } from 'lucide-react';
+import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard, UserCheck, Globe, Menu, X, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
@@ -94,6 +94,13 @@ const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="user-menu">
+              {user?.role === 'admin' && (
+                <Link to="/admin" className="btn btn-accent btn-sm" style={{ fontWeight: 700 }}>
+                  <ShieldCheck size={16} />
+                  <span>Admin Panel</span>
+                </Link>
+              )}
+
               <span className="user-pill">
                 <User size={16} />
                 <span>{user?.fullName?.split(' ')[0] || 'Student'}</span>
@@ -161,7 +168,7 @@ const Navbar = () => {
           {isAuthenticated && (
             <div className="mobile-user-greeting">
               <User size={18} style={{ color: 'var(--primary-blue)' }} />
-              <span>Welcome, <strong>{user?.fullName || 'Student'}</strong></span>
+              <span>Welcome, <strong>{user?.fullName || 'Student'}</strong> {user?.role === 'admin' ? '(Admin)' : ''}</span>
             </div>
           )}
 
@@ -193,6 +200,12 @@ const Navbar = () => {
           <div className="mobile-menu-actions">
             {isAuthenticated ? (
               <>
+                {user?.role === 'admin' && (
+                  <Link to="/admin" onClick={closeMobileMenu} className="btn btn-accent btn-block" style={{ minHeight: '44px', fontWeight: 700 }}>
+                    <ShieldCheck size={18} />
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
                 <Link to="/profile" onClick={closeMobileMenu} className="btn btn-outline btn-block" style={{ minHeight: '44px' }}>
                   <UserCheck size={18} />
                   <span>{t('nav.profile')}</span>
