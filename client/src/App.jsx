@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import Scholarships from './pages/Scholarships';
+import ScholarshipDetail from './pages/ScholarshipDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
@@ -40,6 +42,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/scholarships" element={<Scholarships />} />
+              <Route path="/scholarships/:id" element={<ScholarshipDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<Home />} />

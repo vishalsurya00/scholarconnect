@@ -1,0 +1,357 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import {
+  ShieldCheck,
+  Clock,
+  ExternalLink,
+  CheckSquare,
+  Square,
+  ArrowLeft,
+  Award,
+  Sparkles,
+  Building,
+  FileText,
+  AlertCircle,
+  BookOpen,
+} from 'lucide-react';
+import { API_BASE_URL } from '../config';
+
+const ScholarshipDetail = () => {
+  const { id } = useParams();
+  const [scholarship, setScholarship] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [checkedDocs, setCheckedDocs] = useState({});
+
+  useEffect(() => {
+    fetchDetail();
+  }, [id]);
+
+  const fetchDetail = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scholarships/${id}`);
+      const data = await response.json();
+
+      if (response.ok && data.success && data.scholarship) {
+        setScholarship(data.scholarship);
+      } else {
+        throw new Error(data.message || 'Scholarship not found.');
+      }
+    } catch (err) {
+      console.error('[Fetch Detail Error]:', err);
+      setError(err.message || 'Failed to load scholarship details.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleDocCheck = (index) => {
+    setCheckedDocs((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const getDaysRemaining = (deadlineStr) => {
+    if (!deadlineStr) return null;
+    const deadline = new Date(deadlineStr);
+    const today = new Date();
+    const diffTime = deadline - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
+  if (loading) {
+    return (
+      <div style={{ backgroundColor: 'var(--gray-100)', minHeight: '80vh', padding: '60px 0', textAlign: 'center' }}>
+        <div className="container" style={{ color: 'var(--gray-600)' }}>
+          Loading scholarship details...
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !scholarship) {
+    return (
+      <div style={{ backgroundColor: 'var(--gray-100)', minHeight: '80vh', padding: '60px 0' }}>
+        <div className="container" style={{ maxWidth: '600px', textAlign: 'center' }}>
+          <div className="sc-card" style={{ padding: '40px 24px' }}>
+            <AlertCircle size={48} style={{ color: 'var(--accent-orange)', marginBottom: '16px' }} />
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px' }}>Scholarship Not Found</h2>
+            <p style={{ color: 'var(--gray-600)', marginBottom: '24px' }}>{error || 'The requested scholarship could not be found.'}</p>
+            <Link to="/scholarships" className="btn btn-primary">
+              <ArrowLeft size={16} /> Back to Scholarships
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const rules = scholarship.eligibilityRules || {};
+  const daysRemaining = getDaysRemaining(scholarship.deadline);
+
+  return (
+    <div style={{ backgroundColor: 'var(--gray-100)', minHeight: '85vh', paddingBottom: '60px' }}>
+      {/* Top Breadcrumb Header */}
+      <section style={{ backgroundColor: 'var(--primary-blue)', color: '#ffffff', padding: '30px 0 35px' }}>
+        <div className="container">
+          <Link
+            to="/scholarships"
+            style={{
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontSize: '0.9rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '16px',
+              fontWeight: 600,
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Scholarships Portal
+          </Link>
+
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+            <span className="badge" style={{ backgroundColor: 'rgba(255,255,255,0.18)', color: '#ffffff' }}>
+              <Building size={14} /> {scholarship.issuingBody}
+            </span>
+            {scholarship.featured && (
+              <span className="badge badge-featured">
+                <Sparkles size={14} /> Featured Scheme
+              </span>
+            )}
+            {daysRemaining !== null && (
+              <span className="badge badge-days-left">
+                <Clock size={14} /> {daysRemaining} Days Left to Apply
+              </span>
+            )}
+          </div>
+
+          <h1 style={{ fontSize: '2.1rem', fontWeight: 800, lineHeight: 1.25, maxWidth: '850px' }}>
+            {scholarship.name}
+          </h1>
+        </div>
+      </section>
+
+      <div className="container" style={{ marginTop: '-20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '28px' }}>
+          {/* Main Left Detail Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {/* Award Overview Card */}
+            <div className="sc-card" style={{ padding: '24px 28px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', color: 'var(--primary-blue)', fontWeight: 700 }}>
+                <Award size={22} /> Award Amount & Benefits
+              </div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '10px' }}>
+                {scholarship.awardAmount}
+              </div>
+              <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', margin: 0 }}>
+                {scholarship.renewable
+                  ? '🔄 Renewable each academic year subject to satisfactory performance.'
+                  : '📌 One-time financial assistance grant.'}
+              </p>
+            </div>
+
+            {/* Eligibility Criteria Breakdown */}
+            <div className="sc-card" style={{ padding: '24px 28px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-blue)', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <BookOpen size={20} /> Eligibility Criteria Checklist
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
+                  <div>
+                    <strong style={{ color: 'var(--gray-900)' }}>Education Class / Degree:</strong>
+                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                      Students currently enrolled in Class <strong>{rules.minClass || '1st'}</strong> to <strong>{rules.maxClass || 'PG'}</strong>.
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
+                  <div>
+                    <strong style={{ color: 'var(--gray-900)' }}>Domicile State Scope:</strong>
+                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                      {rules.states && rules.states.includes('ALL') || scholarship.state === 'ALL'
+                        ? 'Open to students residing in any State or UT across India.'
+                        : `Must be a resident / domicile of ${rules.states?.join(', ') || scholarship.state}.`}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
+                  <div>
+                    <strong style={{ color: 'var(--gray-900)' }}>Annual Family Income Limit:</strong>
+                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                      {rules.maxIncome
+                        ? `Gross family income from all sources must NOT exceed ₹${rules.maxIncome.toLocaleString('en-IN')} / year.`
+                        : 'No upper income ceiling restriction specified.'}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
+                  <div>
+                    <strong style={{ color: 'var(--gray-900)' }}>Category Eligibility:</strong>
+                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                      {rules.categories && rules.categories.includes('ALL')
+                        ? 'Open for all categories (General, SC, ST, OBC, EWS, Minority).'
+                        : `Eligible Categories: ${rules.categories?.join(', ')}.`}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
+                  <div>
+                    <strong style={{ color: 'var(--gray-900)' }}>Gender:</strong>
+                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                      {rules.genders && rules.genders.includes('ALL')
+                        ? 'Open to Male, Female, and Transgender applicants.'
+                        : `Specific to: ${rules.genders?.join(', ')}.`}
+                    </div>
+                  </div>
+                </div>
+
+                {(rules.requiresDisability || rules.requiresFirstGen || rules.requiresSportsQuota) && (
+                  <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-orange)', marginTop: '7px' }}></div>
+                    <div>
+                      <strong style={{ color: 'var(--gray-900)' }}>Special Category Requirements:</strong>
+                      <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
+                        {rules.requiresDisability && '• Must have Person with Disability (PWD) certificate. '}
+                        {rules.requiresFirstGen && '• Must be a First-Generation Learner. '}
+                        {rules.requiresSportsQuota && '• Must possess Sports Quota achievement certificate.'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Required Documents Checklist Card */}
+            <div className="sc-card" style={{ padding: '24px 28px' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-blue)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <FileText size={20} /> Documents Required to Apply
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: 'var(--gray-600)', marginBottom: '18px' }}>
+                Use this interactive checklist to prepare your documents before filling out the official application portal.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {scholarship.documentsRequired && scholarship.documentsRequired.length > 0 ? (
+                  scholarship.documentsRequired.map((doc, idx) => {
+                    const isChecked = !!checkedDocs[idx];
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => toggleDocCheck(idx)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '12px 16px',
+                          borderRadius: 'var(--radius-sm)',
+                          backgroundColor: isChecked ? '#f0fdf4' : 'var(--gray-100)',
+                          border: isChecked ? '1px solid #bbf7d0' : '1px solid var(--gray-200)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        {isChecked ? (
+                          <CheckSquare size={18} style={{ color: 'var(--success-green)' }} />
+                        ) : (
+                          <Square size={18} style={{ color: 'var(--gray-400)' }} />
+                        )}
+                        <span style={{ fontSize: '0.92rem', color: isChecked ? 'var(--gray-900)' : 'var(--gray-700)', fontWeight: isChecked ? 600 : 400 }}>
+                          {doc}
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div style={{ color: 'var(--gray-500)', fontSize: '0.9rem' }}>No specific documents specified.</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar Action Box */}
+          <div>
+            <div
+              className="sc-card"
+              style={{
+                position: 'sticky',
+                top: '20px',
+                padding: '24px',
+                borderTop: '4px solid var(--accent-orange)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--success-green)', fontWeight: 700, fontSize: '0.9rem', marginBottom: '16px' }}>
+                <ShieldCheck size={18} /> Verified Scheme Details
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginBottom: '4px' }}>Application Deadline</div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--gray-900)' }}>
+                  {new Date(scholarship.deadline).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginBottom: '4px' }}>Last Verified Date</div>
+                <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)', fontWeight: 600 }}>
+                  {new Date(scholarship.lastVerifiedDate || Date.now()).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <a
+                  href={scholarship.applicationLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-accent btn-lg"
+                  style={{ justifyContent: 'center', width: '100%', textDecoration: 'none' }}
+                >
+                  Apply on Official Website <ExternalLink size={18} />
+                </a>
+
+                {scholarship.sourceVerifiedLink && (
+                  <a
+                    href={scholarship.sourceVerifiedLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline btn-md"
+                    style={{ justifyContent: 'center', width: '100%', textDecoration: 'none', color: 'var(--primary-blue)', borderColor: 'var(--gray-300)' }}
+                  >
+                    View Official Govt Notification <ExternalLink size={15} />
+                  </a>
+                )}
+              </div>
+
+              <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--gray-200)', fontSize: '0.82rem', color: 'var(--gray-500)', textAlign: 'center' }}>
+                ScholarConnect never charges fees for applying to scholarships.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ScholarshipDetail;
