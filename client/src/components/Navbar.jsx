@@ -1,15 +1,21 @@
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard, UserCheck } from 'lucide-react';
+import { GraduationCap, LogIn, UserPlus, LogOut, User, LayoutDashboard, UserCheck, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleLanguageChange = (e) => {
+    i18n.changeLanguage(e.target.value);
   };
 
   return (
@@ -34,7 +40,7 @@ const Navbar = () => {
                 className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
                 end
               >
-                Home
+                {t('nav.home')}
               </NavLink>
             </li>
             <li>
@@ -42,7 +48,7 @@ const Navbar = () => {
                 to="/scholarships"
                 className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
               >
-                Scholarships
+                {t('nav.scholarships')}
               </NavLink>
             </li>
             <li>
@@ -64,8 +70,40 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        {/* Right Action Buttons / User Menu */}
-        <div className="nav-auth-buttons">
+        {/* Right Action Buttons & Language Switcher */}
+        <div className="nav-auth-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Language Selector Dropdown */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'var(--gray-100)',
+              padding: '4px 8px',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--gray-300)',
+            }}
+          >
+            <Globe size={15} style={{ color: 'var(--primary-blue)' }} />
+            <select
+              value={i18n.language?.substring(0, 2) || 'en'}
+              onChange={handleLanguageChange}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: 'var(--gray-800)',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+            </select>
+          </div>
+
           {isAuthenticated ? (
             <div className="user-menu">
               <span className="user-pill">
@@ -75,28 +113,28 @@ const Navbar = () => {
 
               <Link to="/profile" className="btn btn-outline btn-sm">
                 <UserCheck size={16} />
-                <span>Profile</span>
+                <span>{t('nav.profile')}</span>
               </Link>
 
               <Link to="/dashboard" className="btn btn-outline btn-sm">
                 <LayoutDashboard size={16} />
-                <span>Dashboard</span>
+                <span>{t('nav.dashboard')}</span>
               </Link>
 
               <button onClick={handleLogout} className="btn btn-ghost btn-sm" title="Logout">
                 <LogOut size={16} />
-                <span>Logout</span>
+                <span>{t('nav.logout')}</span>
               </button>
             </div>
           ) : (
             <>
               <Link to="/login" className="btn btn-outline btn-sm">
                 <LogIn size={16} />
-                <span>Login</span>
+                <span>{t('nav.login')}</span>
               </Link>
               <Link to="/register" className="btn btn-primary btn-sm">
                 <UserPlus size={16} />
-                <span>Register</span>
+                <span>{t('nav.register')}</span>
               </Link>
             </>
           )}

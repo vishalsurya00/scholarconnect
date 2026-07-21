@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ShieldCheck, Clock, Award, Sparkles, CheckCircle2, ArrowRight, UserCheck, LayoutDashboard } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
+  const { t } = useTranslation();
   const studentName = user?.fullName ? user.fullName.split(' ')[0] : 'Student';
 
   return (
@@ -23,7 +25,7 @@ const Home = () => {
                   borderColor: 'rgba(74, 222, 128, 0.3)',
                 }}
               >
-                <Sparkles size={14} /> Welcome Back, {studentName}
+                <Sparkles size={14} /> {t('home.welcomeBackTitle', { name: studentName })}
               </span>
 
               <h1
@@ -36,7 +38,7 @@ const Home = () => {
                   margin: '0 auto 20px',
                 }}
               >
-                Welcome back, <span style={{ color: 'var(--accent-orange)' }}>{user?.fullName || 'Student'}</span>!
+                {t('home.welcomeBackTitle', { name: user?.fullName || 'Student' })}
               </h1>
 
               <p
@@ -48,19 +50,19 @@ const Home = () => {
                   lineHeight: 1.6,
                 }}
               >
-                Continue exploring verified scholarships matched specifically to your academic profile and criteria.
+                {t('home.welcomeBackSubtitle')}
               </p>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <Link to="/scholarships" className="btn btn-accent btn-lg">
-                  <LayoutDashboard size={18} /> View Matched Scholarships
+                  <LayoutDashboard size={18} /> {t('home.viewMatched')}
                 </Link>
                 <Link
                   to="/profile"
                   className="btn btn-outline btn-lg"
                   style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)' }}
                 >
-                  <UserCheck size={18} /> My Profile
+                  <UserCheck size={18} /> {t('home.myProfile')}
                 </Link>
               </div>
             </>
@@ -75,7 +77,7 @@ const Home = () => {
                   borderColor: 'rgba(74, 222, 128, 0.3)',
                 }}
               >
-                <Sparkles size={14} /> India's Dedicated Scholarship Portal
+                <Sparkles size={14} /> {t('home.badge')}
               </span>
 
               <h1
@@ -88,7 +90,7 @@ const Home = () => {
                   margin: '0 auto 20px',
                 }}
               >
-                Discover Verified Scholarships tailored for <span style={{ color: 'var(--accent-orange)' }}>Every Indian Student</span>
+                {t('home.title')}
               </h1>
 
               <p
@@ -100,19 +102,19 @@ const Home = () => {
                   lineHeight: 1.6,
                 }}
               >
-                From Class 1 to Post-Graduate degrees — search, verify eligibility, and get direct government and trust application links.
+                {t('home.subtitle')}
               </p>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <Link to="/register" className="btn btn-accent btn-lg">
-                  Get Started Free <ArrowRight size={18} />
+                  {t('home.getStarted')} <ArrowRight size={18} />
                 </Link>
                 <Link
                   to="/login"
                   className="btn btn-outline btn-lg"
                   style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)' }}
                 >
-                  Sign In to Account
+                  {t('home.signIn')}
                 </Link>
               </div>
             </>
@@ -125,7 +127,7 @@ const Home = () => {
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
             <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary-blue)', marginBottom: '8px' }}>
-              Why Students & Parents Trust ScholarConnect
+              {t('home.trustTitle')}
             </h2>
             <p style={{ color: 'var(--gray-600)' }}>
               Built with complete transparency, verified sources, and real-time deadline tracking.

@@ -15,6 +15,7 @@ import {
   ExternalLink,
   BookOpen,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 
@@ -219,13 +220,13 @@ const Scholarships = () => {
                 marginBottom: '12px',
               }}
             >
-              <Sparkles size={14} /> Discovery Hub
+              <Sparkles size={14} /> {t('scholarships.badge')}
             </span>
             <h1 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '10px' }}>
-              Explore Verified Scholarships in India
+              {t('scholarships.title')}
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.5 }}>
-              Direct government portals and verified private trust schemes for school, college, and postgraduate students.
+              {t('scholarships.subtitle')}
             </p>
           </div>
         </div>
@@ -245,7 +246,7 @@ const Scholarships = () => {
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <AlertCircle size={15} style={{ color: 'var(--accent-orange)', flexShrink: 0 }} />
           <span>
-            <strong>Notice:</strong> Dates shown reflect typical annual cycles — always confirm exact current-year deadlines on the official portal before applying.
+            {t('scholarships.notice')}
           </span>
         </div>
       </div>
@@ -312,7 +313,7 @@ const Scholarships = () => {
             }}
           >
             {/* Search Input */}
-            <div>
+            <div style={{ flex: 1, minWidth: '220px' }}>
               <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--gray-700)', display: 'block', marginBottom: '6px' }}>
                 Search Keyword
               </label>
@@ -320,7 +321,7 @@ const Scholarships = () => {
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gray-400)' }} />
                 <input
                   type="text"
-                  placeholder="Scheme name, AICTE, NSP..."
+                  placeholder={t('scholarships.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{
@@ -337,7 +338,7 @@ const Scholarships = () => {
             {/* State Filter */}
             <div>
               <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--gray-700)', display: 'block', marginBottom: '6px' }}>
-                State / Scope
+                {t('scholarships.stateLabel')}
               </label>
               <select
                 value={selectedState}
@@ -352,7 +353,7 @@ const Scholarships = () => {
               >
                 {INDIAN_STATES.map((st) => (
                   <option key={st} value={st}>
-                    {st === 'ALL' ? 'All States (Central & Nationwide)' : st}
+                    {st === 'ALL' ? t('scholarships.allStates') : st}
                   </option>
                 ))}
               </select>
@@ -361,7 +362,7 @@ const Scholarships = () => {
             {/* Class Filter */}
             <div>
               <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--gray-700)', display: 'block', marginBottom: '6px' }}>
-                Current Class / Degree
+                {t('scholarships.classLabel')}
               </label>
               <select
                 value={selectedClass}
@@ -376,7 +377,7 @@ const Scholarships = () => {
               >
                 {CLASS_OPTIONS.map((cls) => (
                   <option key={cls} value={cls}>
-                    {cls === 'ALL' ? 'All Classes (1st to PG)' : cls}
+                    {cls === 'ALL' ? t('scholarships.allClasses') : cls}
                   </option>
                 ))}
               </select>
@@ -385,7 +386,7 @@ const Scholarships = () => {
             {/* Category Filter */}
             <div>
               <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--gray-700)', display: 'block', marginBottom: '6px' }}>
-                Category
+                {t('scholarships.categoryLabel')}
               </label>
               <select
                 value={selectedCategory}
@@ -400,7 +401,7 @@ const Scholarships = () => {
               >
                 {CATEGORY_OPTIONS.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat === 'ALL' ? 'All Categories' : cat}
+                    {cat === 'ALL' ? t('scholarships.allCategories') : cat}
                   </option>
                 ))}
               </select>
@@ -437,7 +438,7 @@ const Scholarships = () => {
               }}
             >
               <CheckCircle2 size={16} style={{ color: activeTab === 'eligible' ? '#4ade80' : 'var(--success-green)' }} />
-              Eligible for You
+              {t('scholarships.tabEligible')}
               <span
                 style={{
                   backgroundColor: activeTab === 'eligible' ? 'rgba(255,255,255,0.25)' : 'var(--gray-200)',
@@ -469,7 +470,7 @@ const Scholarships = () => {
               }}
             >
               <HelpCircle size={16} style={{ color: activeTab === 'uncertain' ? '#fde047' : 'var(--accent-orange)' }} />
-              Complete Profile to Check
+              {t('scholarships.tabUncertain')}
               <span
                 style={{
                   backgroundColor: activeTab === 'uncertain' ? 'rgba(255,255,255,0.25)' : 'var(--gray-200)',
@@ -501,7 +502,7 @@ const Scholarships = () => {
               }}
             >
               <BookOpen size={16} />
-              Browse All Schemes
+              {t('scholarships.tabAll')}
               <span
                 style={{
                   backgroundColor: activeTab === 'all' ? 'rgba(255,255,255,0.25)' : 'var(--gray-200)',
@@ -534,10 +535,10 @@ const Scholarships = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', color: '#873800' }}>
               <AlertCircle size={18} style={{ color: 'var(--accent-orange)' }} />
-              These scholarships require additional profile details (e.g. state, category, or income) to confirm full eligibility.
+              {t('scholarships.uncertainNotice')}
             </div>
             <Link to="/profile" className="btn btn-accent btn-sm" style={{ whiteSpace: 'nowrap' }}>
-              Update Profile Now →
+              {t('scholarships.updateProfileNow')}
             </Link>
           </div>
         )}
@@ -561,10 +562,10 @@ const Scholarships = () => {
             >
               <CheckCircle2 size={40} style={{ color: 'var(--success-green)', marginBottom: '12px' }} />
               <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
-                All Clear! No Uncertain Matches
+                {t('scholarships.emptyUncertainTitle')}
               </h3>
               <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', maxWidth: '540px', margin: '0 auto 20px', lineHeight: 1.5 }}>
-                Nothing here! Your profile is complete enough that we could confidently sort every scholarship into Eligible or Not Eligible.
+                {t('scholarships.emptyUncertainDesc')}
               </p>
               <Link to="/profile" className="btn btn-outline btn-sm">
                 View Your Profile
@@ -583,10 +584,10 @@ const Scholarships = () => {
             >
               <Sparkles size={40} style={{ color: 'var(--accent-orange)', marginBottom: '12px' }} />
               <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
-                No eligible scholarships found yet
+                {t('scholarships.emptyEligibleTitle')}
               </h3>
               <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', maxWidth: '540px', margin: '0 auto 20px', lineHeight: 1.5 }}>
-                No eligible scholarships found yet. Complete your profile or check back as we add more schemes.
+                {t('scholarships.emptyEligibleDesc')}
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
                 <Link to="/profile" className="btn btn-accent btn-sm">
@@ -596,7 +597,7 @@ const Scholarships = () => {
                   onClick={() => setActiveTab('all')}
                   className="btn btn-outline btn-sm"
                 >
-                  Browse All Schemes
+                  {t('scholarships.tabAll')}
                 </button>
               </div>
             </div>
@@ -613,10 +614,10 @@ const Scholarships = () => {
             >
               <Search size={36} style={{ color: 'var(--gray-400)', marginBottom: '12px' }} />
               <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
-                No scholarships matched your filters
+                {t('scholarships.emptyAllTitle')}
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--gray-500)', marginBottom: '16px' }}>
-                Try resetting your dropdown selections or search term.
+                {t('scholarships.emptyAllDesc')}
               </p>
               <button
                 onClick={() => {
@@ -627,7 +628,7 @@ const Scholarships = () => {
                 }}
                 className="btn btn-outline btn-sm"
               >
-                Reset Filters
+                {t('scholarships.resetFilters')}
               </button>
             </div>
           )

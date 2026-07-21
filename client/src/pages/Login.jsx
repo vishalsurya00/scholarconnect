@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, AlertCircle, ArrowRight, GraduationCap, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -10,18 +11,19 @@ const Login = () => {
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!identifier.trim()) {
-      setError('Please enter your email address or phone number.');
+      setError(t('auth.emailOrPhoneLabel'));
       return;
     }
 
     if (!password) {
-      setError('Please enter your password.');
+      setError(t('auth.passwordLabel'));
       return;
     }
 
@@ -30,7 +32,7 @@ const Login = () => {
     if (res.success) {
       navigate('/dashboard');
     } else {
-      setError(res.message || 'Login failed. Invalid Email/Phone or Password.');
+      setError(res.message || t('auth.loginFailed'));
     }
   };
 
@@ -38,8 +40,8 @@ const Login = () => {
     <div className="auth-page-wrapper">
       <div className="auth-card">
         <div className="auth-header">
-          <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">Sign in to access your scholarship applications & alerts</p>
+          <h1 className="auth-title">{t('auth.loginTitle')}</h1>
+          <p className="auth-subtitle">{t('auth.loginSubtitle')}</p>
         </div>
 
         <div className="auth-body">
@@ -54,7 +56,7 @@ const Login = () => {
             {/* Email or Phone */}
             <div className="form-group">
               <label className="form-label" htmlFor="identifier">
-                Email OR Phone Number
+                {t('auth.emailOrPhoneLabel')}
               </label>
               <div className="form-input-wrapper">
                 <Mail size={18} className="form-icon" />
@@ -62,7 +64,7 @@ const Login = () => {
                   type="text"
                   id="identifier"
                   className="form-input has-icon"
-                  placeholder="Enter email or 10-digit phone number"
+                  placeholder={t('auth.emailOrPhonePlaceholder')}
                   value={identifier}
                   onChange={(e) => {
                     setIdentifier(e.target.value);
@@ -76,7 +78,7 @@ const Login = () => {
             {/* Password */}
             <div className="form-group">
               <label className="form-label" htmlFor="password">
-                Password
+                {t('auth.passwordLabel')}
               </label>
               <div className="form-input-wrapper" style={{ position: 'relative' }}>
                 <Lock size={18} className="form-icon" />
@@ -85,7 +87,7 @@ const Login = () => {
                   id="password"
                   className="form-input has-icon"
                   style={{ paddingRight: '42px' }}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
@@ -121,15 +123,15 @@ const Login = () => {
               disabled={loading}
               style={{ marginTop: '10px' }}
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? t('auth.signingIn') : t('auth.signInBtn')}
               {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
           <div className="auth-footer">
-            Don't have an account yet?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/register" style={{ fontWeight: 600 }}>
-              Register Now
+              {t('auth.registerLink')}
             </Link>
           </div>
         </div>

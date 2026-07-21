@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 const Register = () => {
@@ -16,6 +17,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const { register, loading } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleChange = (e) => {
     setFormData({
@@ -30,17 +32,17 @@ const Register = () => {
     setError('');
 
     if (!formData.fullName.trim()) {
-      setError('Please enter your full name.');
+      setError(t('auth.fullNameLabel'));
       return;
     }
 
     if (!formData.identifier.trim()) {
-      setError('Please enter your email or phone number.');
+      setError(t('auth.emailOrPhoneLabel'));
       return;
     }
 
     if (!formData.password) {
-      setError('Please enter a password.');
+      setError(t('auth.passwordLabel'));
       return;
     }
 
@@ -64,7 +66,7 @@ const Register = () => {
     if (res.success) {
       navigate('/dashboard');
     } else {
-      setError(res.message || 'Registration failed. Please try again.');
+      setError(res.message || t('auth.registerFailed'));
     }
   };
 
@@ -72,8 +74,8 @@ const Register = () => {
     <div className="auth-page-wrapper">
       <div className="auth-card">
         <div className="auth-header">
-          <h1 className="auth-title">Join ScholarConnect</h1>
-          <p className="auth-subtitle">Create a student account to discover scholarships across India</p>
+          <h1 className="auth-title">{t('auth.registerTitle')}</h1>
+          <p className="auth-subtitle">{t('auth.registerSubtitle')}</p>
         </div>
 
         <div className="auth-body">
@@ -87,7 +89,7 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
             {/* Full Name Field */}
             <div className="form-group">
-              <label className="form-label" htmlFor="fullName">Full Name</label>
+              <label className="form-label" htmlFor="fullName">{t('auth.fullNameLabel')}</label>
               <div className="form-input-wrapper">
                 <User size={18} className="form-icon" />
                 <input
@@ -95,7 +97,7 @@ const Register = () => {
                   id="fullName"
                   name="fullName"
                   className="form-input has-icon"
-                  placeholder="e.g. Ramesh Kumar"
+                  placeholder={t('auth.fullNamePlaceholder')}
                   value={formData.fullName}
                   onChange={handleChange}
                   required
@@ -105,7 +107,7 @@ const Register = () => {
 
             {/* Email OR Phone Field */}
             <div className="form-group">
-              <label className="form-label" htmlFor="identifier">Email OR Phone Number</label>
+              <label className="form-label" htmlFor="identifier">{t('auth.emailOrPhoneLabel')}</label>
               <div className="form-input-wrapper">
                 <Mail size={18} className="form-icon" />
                 <input
@@ -113,18 +115,17 @@ const Register = () => {
                   id="identifier"
                   name="identifier"
                   className="form-input has-icon"
-                  placeholder="e.g. student@gmail.com or 9876543210"
+                  placeholder={t('auth.emailOrPhonePlaceholder')}
                   value={formData.identifier}
                   onChange={handleChange}
                   required
                 />
               </div>
-              <span className="form-hint">Enter valid Indian mobile number or email ID</span>
             </div>
 
             {/* Password Field */}
             <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
+              <label className="form-label" htmlFor="password">{t('auth.passwordLabel')}</label>
               <div className="form-input-wrapper" style={{ position: 'relative' }}>
                 <Lock size={18} className="form-icon" />
                 <input
@@ -133,7 +134,7 @@ const Register = () => {
                   name="password"
                   className="form-input has-icon"
                   style={{ paddingRight: '42px' }}
-                  placeholder="At least 6 characters"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -162,7 +163,7 @@ const Register = () => {
 
             {/* Confirm Password Field */}
             <div className="form-group">
-              <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
+              <label className="form-label" htmlFor="confirmPassword">{t('auth.confirmPasswordLabel')}</label>
               <div className="form-input-wrapper" style={{ position: 'relative' }}>
                 <Lock size={18} className="form-icon" />
                 <input
@@ -171,7 +172,7 @@ const Register = () => {
                   name="confirmPassword"
                   className="form-input has-icon"
                   style={{ paddingRight: '42px' }}
-                  placeholder="Re-enter your password"
+                  placeholder={t('auth.confirmPasswordPlaceholder')}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
@@ -204,15 +205,15 @@ const Register = () => {
               disabled={loading}
               style={{ marginTop: '10px' }}
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? t('auth.registering') : t('auth.registerBtn')}
               {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
           <div className="auth-footer">
-            Already have an account?{' '}
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" style={{ fontWeight: 600 }}>
-              Sign In
+              {t('auth.loginLink')}
             </Link>
           </div>
         </div>
