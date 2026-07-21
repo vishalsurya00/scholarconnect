@@ -4,6 +4,8 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import InstallPrompt from './components/InstallPrompt';
+import OfflineBanner from './components/OfflineBanner';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -20,6 +22,8 @@ function App() {
     <AuthProvider>
       <Router>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <InstallPrompt />
+          <OfflineBanner />
           <Navbar />
           <main style={{ flex: '1 0 auto' }}>
             <Routes>
