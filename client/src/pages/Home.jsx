@@ -52,7 +52,7 @@ const Home = () => {
               </p>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                <Link to="/dashboard" className="btn btn-accent btn-lg">
+                <Link to="/scholarships" className="btn btn-accent btn-lg">
                   <LayoutDashboard size={18} /> View Matched Scholarships
                 </Link>
                 <Link
