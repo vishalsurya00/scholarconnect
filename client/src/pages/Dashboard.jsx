@@ -22,7 +22,14 @@ const Dashboard = () => {
   const { user, token, logout, updateName } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    return localStorage.getItem('sc_banner_dismissed') === 'true';
+  });
+
+  const handleDismissBanner = () => {
+    setBannerDismissed(true);
+    localStorage.setItem('sc_banner_dismissed', 'true');
+  };
 
   // Name Editing State
   const [isEditingName, setIsEditingName] = useState(false);
@@ -184,7 +191,7 @@ const Dashboard = () => {
           </div>
 
           {/* Dismissible Banner */}
-          {!bannerDismissed && completeness < 100 && (
+          {!bannerDismissed && completeness < 90 && (
             <div
               className="alert alert-info"
               style={{
@@ -214,7 +221,7 @@ const Dashboard = () => {
                   Complete Profile <ArrowRight size={14} />
                 </Link>
                 <button
-                  onClick={() => setBannerDismissed(true)}
+                  onClick={handleDismissBanner}
                   style={{ background: 'transparent', color: 'var(--gray-500)', cursor: 'pointer' }}
                   title="Dismiss banner"
                 >
