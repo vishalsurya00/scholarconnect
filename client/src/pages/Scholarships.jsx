@@ -499,7 +499,7 @@ const Scholarships = () => {
         )}
 
         {/* Tab Notice Banner for Uncertain Tab */}
-        {isAuthenticated && activeTab === 'uncertain' && (
+        {isAuthenticated && activeTab === 'uncertain' && displayedItems.length > 0 && (
           <div
             className="alert"
             style={{
@@ -529,34 +529,89 @@ const Scholarships = () => {
             Loading scholarships...
           </div>
         ) : displayedItems.length === 0 ? (
-          <div
-            className="sc-card"
-            style={{
-              textAlign: 'center',
-              padding: '50px 20px',
-              color: 'var(--gray-600)',
-              backgroundColor: '#ffffff',
-            }}
-          >
-            <Search size={36} style={{ color: 'var(--gray-400)', marginBottom: '12px' }} />
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
-              No scholarships matched your filters
-            </h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--gray-500)', marginBottom: '16px' }}>
-              Try resetting your dropdown selections or search term.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedState('ALL');
-                setSelectedClass('ALL');
-                setSelectedCategory('ALL');
-                setSearchQuery('');
+          isAuthenticated && activeTab === 'uncertain' ? (
+            /* Context-Aware Empty State: Uncertain Tab */
+            <div
+              className="sc-card"
+              style={{
+                textAlign: 'center',
+                padding: '50px 24px',
+                color: 'var(--gray-600)',
+                backgroundColor: '#ffffff',
               }}
-              className="btn btn-outline btn-sm"
             >
-              Reset Filters
-            </button>
-          </div>
+              <CheckCircle2 size={40} style={{ color: 'var(--success-green)', marginBottom: '12px' }} />
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
+                All Clear! No Uncertain Matches
+              </h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', maxWidth: '540px', margin: '0 auto 20px', lineHeight: 1.5 }}>
+                Nothing here! Your profile is complete enough that we could confidently sort every scholarship into Eligible or Not Eligible.
+              </p>
+              <Link to="/profile" className="btn btn-outline btn-sm">
+                View Your Profile
+              </Link>
+            </div>
+          ) : isAuthenticated && activeTab === 'eligible' ? (
+            /* Context-Aware Empty State: Eligible Tab */
+            <div
+              className="sc-card"
+              style={{
+                textAlign: 'center',
+                padding: '50px 24px',
+                color: 'var(--gray-600)',
+                backgroundColor: '#ffffff',
+              }}
+            >
+              <Sparkles size={40} style={{ color: 'var(--accent-orange)', marginBottom: '12px' }} />
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
+                No eligible scholarships found yet
+              </h3>
+              <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', maxWidth: '540px', margin: '0 auto 20px', lineHeight: 1.5 }}>
+                No eligible scholarships found yet. Complete your profile or check back as we add more schemes.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
+                <Link to="/profile" className="btn btn-accent btn-sm">
+                  Update Profile
+                </Link>
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className="btn btn-outline btn-sm"
+                >
+                  Browse All Schemes
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Default Filter-Reset Empty State for Browse All & Guests */
+            <div
+              className="sc-card"
+              style={{
+                textAlign: 'center',
+                padding: '50px 20px',
+                color: 'var(--gray-600)',
+                backgroundColor: '#ffffff',
+              }}
+            >
+              <Search size={36} style={{ color: 'var(--gray-400)', marginBottom: '12px' }} />
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '6px' }}>
+                No scholarships matched your filters
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--gray-500)', marginBottom: '16px' }}>
+                Try resetting your dropdown selections or search term.
+              </p>
+              <button
+                onClick={() => {
+                  setSelectedState('ALL');
+                  setSelectedClass('ALL');
+                  setSelectedCategory('ALL');
+                  setSearchQuery('');
+                }}
+                className="btn btn-outline btn-sm"
+              >
+                Reset Filters
+              </button>
+            </div>
+          )
         ) : (
           <div
             style={{
