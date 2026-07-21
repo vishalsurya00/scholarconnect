@@ -78,6 +78,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [isErrorToast, setIsErrorToast] = useState(false);
   const [completeness, setCompleteness] = useState(0);
 
   // Form State
@@ -188,6 +189,7 @@ const Profile = () => {
   const saveProfileData = async (navigateAway = false) => {
     setSaving(true);
     setToastMessage('');
+    setIsErrorToast(false);
 
     try {
       const payload = {
@@ -222,17 +224,21 @@ const Profile = () => {
       if (response.ok && resData.success) {
         const newScore = resData.profile.profileCompleteness || 0;
         setCompleteness(newScore);
+        setIsErrorToast(false);
         setToastMessage(`Profile updated! ${newScore}% complete.`);
 
         if (navigateAway) {
           setTimeout(() => navigate('/dashboard'), 1200);
         }
       } else {
-        setToastMessage('Failed to save profile. Please try again.');
+        console.error('[Save Profile Backend Error]:', resData);
+        setIsErrorToast(true);
+        setToastMessage(resData.message || resData.error || 'Failed to save profile. Please try again.');
       }
     } catch (err) {
-      console.error('[Save Profile Error]:', err);
-      setToastMessage('Network error while saving profile.');
+      console.error('[Save Profile Network/Console Error]:', err);
+      setIsErrorToast(true);
+      setToastMessage(err.message || 'Network error while saving profile.');
     } finally {
       setSaving(false);
     }
@@ -304,8 +310,12 @@ const Profile = () => {
 
         {/* Toast Notification Alert */}
         {toastMessage && (
-          <div className="alert alert-success" style={{ marginBottom: '20px' }}>
-            <CheckCircle2 size={20} style={{ flexShrink: 0 }} />
+          <div className={`alert ${isErrorToast ? 'alert-error' : 'alert-success'}`} style={{ marginBottom: '20px' }}>
+            {isErrorToast ? (
+              <ShieldAlert size={20} style={{ flexShrink: 0 }} />
+            ) : (
+              <CheckCircle2 size={20} style={{ flexShrink: 0 }} />
+            )}
             <span>{toastMessage}</span>
           </div>
         )}

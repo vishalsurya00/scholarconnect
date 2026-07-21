@@ -46,6 +46,29 @@ const getProfile = async (req, res) => {
   }
 };
 
+// Recursive helper to convert empty strings ("") to null for all nested properties
+const sanitizeEmptyStrings = (data) => {
+  if (data === null || data === undefined) return null;
+  if (typeof data !== 'object') {
+    return data === '' ? null : data;
+  }
+  if (Array.isArray(data)) {
+    return data.map(sanitizeEmptyStrings);
+  }
+  const sanitized = {};
+  for (const key of Object.keys(data)) {
+    const val = data[key];
+    if (val === '') {
+      sanitized[key] = null;
+    } else if (val !== null && typeof val === 'object' && !(val instanceof Date)) {
+      sanitized[key] = sanitizeEmptyStrings(val);
+    } else {
+      sanitized[key] = val;
+    }
+  }
+  return sanitized;
+};
+
 /**
  * @route   PUT /api/profile
  * @desc    Update student profile (accepts partial updates, merges data & recalculates completeness)
@@ -54,7 +77,8 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { academic, economic, location, personal, specialCategories } = req.body;
+    const sanitizedBody = sanitizeEmptyStrings(req.body);
+    const { academic, economic, location, personal, specialCategories } = sanitizedBody;
 
     let profile = await StudentProfile.findOne({ userId });
 
@@ -117,7 +141,7 @@ const updateProfile = async (req, res) => {
     console.error('[Update Profile Error]:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to update student profile.',
+      message: error.message || 'Failed to update student profile.',
       error: error.message,
     });
   }

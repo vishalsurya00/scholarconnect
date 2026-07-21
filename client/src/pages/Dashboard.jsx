@@ -19,10 +19,46 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, token, logout } = useAuth();
+  const { user, token, logout, updateName } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  // Name Editing State
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(user?.fullName || '');
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState('');
+
+  // Keep nameInput synchronized with user.fullName
+  useEffect(() => {
+    if (user?.fullName) {
+      setNameInput(user.fullName);
+    }
+  }, [user?.fullName]);
+
+  const handleSaveName = async () => {
+    if (!nameInput.trim()) {
+      setNameError('Name cannot be empty.');
+      return;
+    }
+    setSavingName(true);
+    setNameError('');
+    const res = await updateName(nameInput.trim());
+    setSavingName(false);
+
+    if (res.success) {
+      setIsEditingName(false);
+    } else {
+      setNameError(res.message || 'Failed to update name.');
+    }
+  };
+
+  const handleCancelNameEdit = () => {
+    setIsEditingName(false);
+    setNameInput(user?.fullName || '');
+    setNameError('');
+  };
 
   const studentName = user?.fullName || 'Student';
 
@@ -209,8 +245,66 @@ const Dashboard = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.92rem' }}>
                 <div>
-                  <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>FULL NAME</div>
-                  <div style={{ fontWeight: 600, color: 'var(--gray-800)' }}>{user?.fullName}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>FULL NAME</span>
+                    {!isEditingName && (
+                      <button
+                        onClick={() => setIsEditingName(true)}
+                        style={{
+                          background: 'transparent',
+                          color: 'var(--primary-blue)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                        }}
+                      >
+                        <Edit3 size={13} /> Edit
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditingName ? (
+                    <div style={{ marginTop: '6px' }}>
+                      <input
+                        type="text"
+                        className="form-input"
+                        style={{ padding: '6px 10px', fontSize: '0.9rem', marginBottom: '6px' }}
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        autoFocus
+                      />
+                      {nameError && (
+                        <div style={{ color: '#dc2626', fontSize: '0.78rem', marginBottom: '6px' }}>
+                          {nameError}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          onClick={handleSaveName}
+                          className="btn btn-primary btn-sm"
+                          style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+                          disabled={savingName}
+                        >
+                          {savingName ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={handleCancelNameEdit}
+                          className="btn btn-secondary btn-sm"
+                          style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+                          disabled={savingName}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ fontWeight: 600, color: 'var(--gray-800)', marginTop: '2px' }}>
+                      {user?.fullName}
+                    </div>
+                  )}
                 </div>
 
                 {user?.email && (

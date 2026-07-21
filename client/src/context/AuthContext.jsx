@@ -79,6 +79,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Update authenticated user's full name
+   * @param {string} newName - New full name
+   */
+  const updateName = async (newName) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/update-name`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ fullName: newName }),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok || !resData.success) {
+        throw new Error(resData.message || 'Failed to update name.');
+      }
+
+      setUser((prev) => (prev ? { ...prev, fullName: resData.user.fullName } : resData.user));
+      return { success: true, user: resData.user, message: resData.message };
+    } catch (err) {
+      console.error('[AuthContext UpdateName Error]:', err);
+      return { success: false, message: err.message };
+    }
+  };
+
+  /**
    * Logout user by clearing state
    */
   const logout = () => {
@@ -95,6 +124,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         register,
         login,
+        updateName,
         logout,
       }}
     >

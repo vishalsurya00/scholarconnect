@@ -220,8 +220,59 @@ const getMe = async (req, res) => {
   }
 };
 
+/**
+ * @route   PUT /api/auth/update-name
+ * @desc    Update authenticated user's Full Name
+ * @access  Private (JWT Protected)
+ */
+const updateName = async (req, res) => {
+  try {
+    const { fullName } = req.body;
+
+    if (!fullName || !fullName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Full Name cannot be empty.',
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    user.fullName = fullName.trim();
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Name updated successfully!',
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error('[Update Name Error]:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update user name.',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMe,
+  updateName,
 };

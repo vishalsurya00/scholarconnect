@@ -19,15 +19,18 @@ const studentProfileSchema = new mongoose.Schema(
       currentClass: {
         type: String,
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       stream: {
         type: String,
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       institutionType: {
         type: String,
         enum: ['Government', 'Private', 'Government-Aided', 'Deemed', 'Other', null],
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       lastPercentage: {
         type: Number,
@@ -42,26 +45,31 @@ const studentProfileSchema = new mongoose.Schema(
       parentOccupation: {
         type: String,
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       familyStatus: {
         type: String,
         enum: ['singleParent', 'orphan', 'none'],
         default: 'none',
+        set: (v) => (v === '' ? null : v),
       },
     },
     location: {
       state: {
         type: String,
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       district: {
         type: String,
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       areaType: {
         type: String,
         enum: ['rural', 'urban', null],
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
     },
     personal: {
@@ -69,11 +77,13 @@ const studentProfileSchema = new mongoose.Schema(
         type: String,
         enum: ['Male', 'Female', 'Other', null],
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       category: {
         type: String,
         enum: ['SC', 'ST', 'OBC', 'General', 'EWS', 'Minority', null],
         default: null,
+        set: (v) => (v === '' ? null : v),
       },
       disabilityStatus: {
         type: Boolean,
