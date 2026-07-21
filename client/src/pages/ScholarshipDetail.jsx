@@ -13,19 +13,29 @@ import {
   FileText,
   AlertCircle,
   BookOpen,
+  CheckCircle2,
 } from 'lucide-react';
 import { API_BASE_URL } from '../config';
+import { useAuth } from '../context/AuthContext';
 
 const ScholarshipDetail = () => {
   const { id } = useParams();
+  const { isAuthenticated, token } = useAuth();
+
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [checkedDocs, setCheckedDocs] = useState({});
+
+  // Checklist & Applied State
+  const [checkedDocs, setCheckedDocs] = useState([]);
+  const [applied, setApplied] = useState(false);
 
   useEffect(() => {
     fetchDetail();
-  }, [id]);
+    if (isAuthenticated && token) {
+      fetchChecklist();
+    }
+  }, [id, isAuthenticated, token]);
 
   const fetchDetail = async () => {
     setLoading(true);
@@ -47,11 +57,65 @@ const ScholarshipDetail = () => {
     }
   };
 
-  const toggleDocCheck = (index) => {
-    setCheckedDocs((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
+  const fetchChecklist = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/checklist/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok && data.success && data.checklist) {
+        setCheckedDocs(data.checklist.checkedDocuments || []);
+        setApplied(!!data.checklist.applied);
+      }
+    } catch (err) {
+      console.error('[Fetch Checklist Error]:', err);
+    }
+  };
+
+  const handleToggleDoc = async (docName) => {
+    let newDocs = [];
+    if (checkedDocs.includes(docName)) {
+      newDocs = checkedDocs.filter((d) => d !== docName);
+    } else {
+      newDocs = [...checkedDocs, docName];
+    }
+
+    setCheckedDocs(newDocs);
+
+    if (isAuthenticated && token) {
+      try {
+        await fetch(`${API_BASE_URL}/api/checklist/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ checkedDocuments: newDocs }),
+        });
+      } catch (err) {
+        console.error('[Auto-save Checklist Error]:', err);
+      }
+    }
+  };
+
+  const handleApplyClick = async () => {
+    if (isAuthenticated && token && !applied) {
+      setApplied(true);
+      try {
+        await fetch(`${API_BASE_URL}/api/checklist/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ applied: true }),
+        });
+      } catch (err) {
+        console.error('[Mark Applied Error]:', err);
+      }
+    }
   };
 
   const getDaysRemaining = (deadlineStr) => {
@@ -244,14 +308,38 @@ const ScholarshipDetail = () => {
                 Use this interactive checklist to prepare your documents before filling out the official application portal.
               </p>
 
+              {/* Document Progress Indicator Bar */}
+              {scholarship.documentsRequired && scholarship.documentsRequired.length > 0 && (
+                <div style={{ marginBottom: '18px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', fontWeight: 600, color: 'var(--primary-blue)', marginBottom: '6px' }}>
+                    <span>
+                      {checkedDocs.length} of {scholarship.documentsRequired.length} documents ready
+                    </span>
+                    <span>
+                      {Math.round((checkedDocs.length / scholarship.documentsRequired.length) * 100)}%
+                    </span>
+                  </div>
+                  <div style={{ width: '100%', height: '8px', backgroundColor: 'var(--gray-200)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        width: `${(checkedDocs.length / scholarship.documentsRequired.length) * 100}%`,
+                        height: '100%',
+                        backgroundColor: checkedDocs.length === scholarship.documentsRequired.length ? 'var(--success-green)' : 'var(--accent-orange)',
+                        transition: 'width 0.3s ease',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {scholarship.documentsRequired && scholarship.documentsRequired.length > 0 ? (
-                  scholarship.documentsRequired.map((doc, idx) => {
-                    const isChecked = !!checkedDocs[idx];
+                  scholarship.documentsRequired.map((doc) => {
+                    const isChecked = checkedDocs.includes(doc);
                     return (
                       <div
-                        key={idx}
-                        onClick={() => toggleDocCheck(idx)}
+                        key={doc}
+                        onClick={() => handleToggleDoc(doc)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -265,9 +353,9 @@ const ScholarshipDetail = () => {
                         }}
                       >
                         {isChecked ? (
-                          <CheckSquare size={18} style={{ color: 'var(--success-green)' }} />
+                          <CheckSquare size={18} style={{ color: 'var(--success-green)', flexShrink: 0 }} />
                         ) : (
-                          <Square size={18} style={{ color: 'var(--gray-400)' }} />
+                          <Square size={18} style={{ color: 'var(--gray-400)', flexShrink: 0 }} />
                         )}
                         <span style={{ fontSize: '0.92rem', color: isChecked ? 'var(--gray-900)' : 'var(--gray-700)', fontWeight: isChecked ? 600 : 400 }}>
                           {doc}
@@ -319,11 +407,34 @@ const ScholarshipDetail = () => {
                 </div>
               </div>
 
+              {/* Applied Status Badge */}
+              {applied && (
+                <div
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    backgroundColor: '#e6f4ea',
+                    border: '1px solid #b7e1cd',
+                    color: '#137333',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '14px',
+                  }}
+                >
+                  <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+                  <span>You've applied — track status on official portal</span>
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <a
                   href={scholarship.applicationLink}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleApplyClick}
                   className="btn btn-accent btn-lg"
                   style={{ justifyContent: 'center', width: '100%', textDecoration: 'none' }}
                 >

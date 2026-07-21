@@ -22,6 +22,8 @@ const Dashboard = () => {
   const { user, token, logout, updateName } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [checklists, setChecklists] = useState([]);
+  const [loadingChecklists, setLoadingChecklists] = useState(true);
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('sc_banner_dismissed') === 'true';
   });
@@ -89,8 +91,27 @@ const Dashboard = () => {
       }
     };
 
+    const fetchChecklists = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/checklist`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (data.success && Array.isArray(data.checklists)) {
+          setChecklists(data.checklists);
+        }
+      } catch (err) {
+        console.error('[Dashboard Fetch Checklists Error]:', err);
+      } finally {
+        setLoadingChecklists(false);
+      }
+    };
+
     if (token) {
       fetchProfile();
+      fetchChecklists();
     }
   }, [token]);
 
@@ -440,8 +461,101 @@ const Dashboard = () => {
             </div>
 
           </div>
-        </div>
-      </section>
+
+          {/* Your Application Tracker Card Section */}
+          <div className="sc-card" style={{ marginTop: '24px', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Award size={22} style={{ color: 'var(--accent-orange)' }} />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-blue)' }}>
+                  Your Application Tracker
+                </h3>
+              </div>
+
+              <Link to="/scholarships" style={{ fontWeight: 600, color: 'var(--primary-blue)', fontSize: '0.88rem' }}>
+                Explore Scholarships →
+              </Link>
+            </div>
+
+            {loadingChecklists ? (
+              <div style={{ color: 'var(--gray-500)', fontSize: '0.9rem', padding: '20px 0' }}>
+                Loading application tracker...
+              </div>
+            ) : checklists.length === 0 ? (
+              /* Friendly Empty State */
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: '30px 20px',
+                  backgroundColor: 'var(--gray-100)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--gray-600)',
+                }}
+              >
+                <Award size={36} style={{ color: 'var(--gray-400)', marginBottom: '10px' }} />
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '4px' }}>
+                  Start exploring scholarships to track your progress here
+                </div>
+                <p style={{ fontSize: '0.86rem', color: 'var(--gray-500)', marginBottom: '16px' }}>
+                  Check off required documents and track your official application submissions in one place.
+                </p>
+                <Link to="/scholarships" className="btn btn-accent btn-sm">
+                  Browse Scholarships
+                </Link>
+              </div>
+            ) : (
+              /* Interacted Scholarships List */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {checklists.slice(0, 5).map((item) => (
+                  <div
+                    key={item._id || item.scholarshipId}
+                    style={{
+                      display: 'flex',
+                      justify: 'space-between',
+                      alignItems: 'center',
+                      padding: '14px 18px',
+                      backgroundColor: 'var(--gray-100)',
+                      borderRadius: 'var(--radius-sm)',
+                      flexWrap: 'wrap',
+                      gap: '10px',
+                    }}
+                  >
+                    <div>
+                      <Link
+                        to={`/scholarships/${item.scholarshipId}`}
+                        style={{ fontWeight: 700, color: 'var(--gray-900)', textDecoration: 'none', fontSize: '0.95rem' }}
+                      >
+                        {item.scholarshipName || 'Scholarship Scheme'}
+                      </Link>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginTop: '2px' }}>
+                        Document Readiness: <strong>{item.checkedDocuments?.length || 0} / {item.totalDocumentsRequired || 5} ready</strong>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {item.applied ? (
+                        <span className="badge badge-verified" style={{ fontSize: '0.8rem' }}>
+                          <ShieldCheck size={13} /> Applied
+                        </span>
+                      ) : (
+                        <span className="badge" style={{ backgroundColor: 'var(--gray-200)', color: 'var(--gray-700)', fontSize: '0.8rem' }}>
+                          In Progress
+                        </span>
+                      )}
+
+                      <Link
+                        to={`/scholarships/${item.scholarshipId}`}
+                        className="btn btn-outline btn-sm"
+                        style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+                      >
+                        Manage →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
     </div>
   );
 };
