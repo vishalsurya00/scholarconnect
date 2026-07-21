@@ -15,12 +15,15 @@ import {
   BookOpen,
   CheckCircle2,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '../config';
 import { useAuth } from '../context/AuthContext';
+import { getLocalizedText } from '../utils/languageUtils';
 
 const ScholarshipDetail = () => {
   const { id } = useParams();
   const { isAuthenticated, token } = useAuth();
+  const { t, i18n } = useTranslation();
 
   const [scholarship, setScholarship] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -174,7 +177,7 @@ const ScholarshipDetail = () => {
               fontWeight: 600,
             }}
           >
-            <ArrowLeft size={16} /> Back to Scholarships Portal
+            <ArrowLeft size={16} /> {t('detail.backToList')}
           </Link>
 
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
@@ -188,13 +191,13 @@ const ScholarshipDetail = () => {
             )}
             {daysRemaining !== null && (
               <span className="badge badge-days-left">
-                <Clock size={14} /> {daysRemaining} Days Left to Apply
+                <Clock size={14} /> {t('dashboard.daysLeft', { days: daysRemaining })}
               </span>
             )}
           </div>
 
           <h1 style={{ fontSize: '2.1rem', fontWeight: 800, lineHeight: 1.25, maxWidth: '850px' }}>
-            {scholarship.name}
+            {getLocalizedText(scholarship.name, i18n.language)}
           </h1>
         </div>
       </section>
@@ -206,10 +209,10 @@ const ScholarshipDetail = () => {
             {/* Award Overview Card */}
             <div className="sc-card" style={{ padding: '24px 28px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', color: 'var(--primary-blue)', fontWeight: 700 }}>
-                <Award size={22} /> Award Amount & Benefits
+                <Award size={22} /> {t('detail.awardAmount')}
               </div>
               <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '10px' }}>
-                {scholarship.awardAmount}
+                {getLocalizedText(scholarship.awardAmount, i18n.language)}
               </div>
               <p style={{ fontSize: '0.92rem', color: 'var(--gray-600)', margin: 0 }}>
                 {scholarship.renewable
@@ -221,14 +224,14 @@ const ScholarshipDetail = () => {
             {/* Eligibility Criteria Breakdown */}
             <div className="sc-card" style={{ padding: '24px 28px' }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-blue)', marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <BookOpen size={20} /> Eligibility Criteria Checklist
+                <BookOpen size={20} /> {t('detail.eligibilityTitle')}
               </h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
                   <div>
-                    <strong style={{ color: 'var(--gray-900)' }}>Education Class / Degree:</strong>
+                    <strong style={{ color: 'var(--gray-900)' }}>{t('scholarships.classLabel')}:</strong>
                     <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
                       Students currently enrolled in Class <strong>{rules.minClass || '1st'}</strong> to <strong>{rules.maxClass || 'PG'}</strong>.
                     </div>
@@ -238,7 +241,7 @@ const ScholarshipDetail = () => {
                 <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
                   <div>
-                    <strong style={{ color: 'var(--gray-900)' }}>Domicile State Scope:</strong>
+                    <strong style={{ color: 'var(--gray-900)' }}>{t('scholarships.stateLabel')}:</strong>
                     <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
                       {rules.states && rules.states.includes('ALL') || scholarship.state === 'ALL'
                         ? 'Open to students residing in any State or UT across India.'
@@ -250,7 +253,7 @@ const ScholarshipDetail = () => {
                 <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
                   <div>
-                    <strong style={{ color: 'var(--gray-900)' }}>Annual Family Income Limit:</strong>
+                    <strong style={{ color: 'var(--gray-900)' }}>{t('dashboard.familyIncome')}:</strong>
                     <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
                       {rules.maxIncome
                         ? `Gross family income from all sources must NOT exceed ₹${rules.maxIncome.toLocaleString('en-IN')} / year.`
@@ -262,7 +265,7 @@ const ScholarshipDetail = () => {
                 <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
                   <div>
-                    <strong style={{ color: 'var(--gray-900)' }}>Category Eligibility:</strong>
+                    <strong style={{ color: 'var(--gray-900)' }}>{t('scholarships.categoryLabel')}:</strong>
                     <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
                       {rules.categories && rules.categories.includes('ALL')
                         ? 'Open for all categories (General, SC, ST, OBC, EWS, Minority).'
@@ -270,42 +273,16 @@ const ScholarshipDetail = () => {
                     </div>
                   </div>
                 </div>
-
-                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary-blue)', marginTop: '7px' }}></div>
-                  <div>
-                    <strong style={{ color: 'var(--gray-900)' }}>Gender:</strong>
-                    <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
-                      {rules.genders && rules.genders.includes('ALL')
-                        ? 'Open to Male, Female, and Transgender applicants.'
-                        : `Specific to: ${rules.genders?.join(', ')}.`}
-                    </div>
-                  </div>
-                </div>
-
-                {(rules.requiresDisability || rules.requiresFirstGen || rules.requiresSportsQuota) && (
-                  <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-orange)', marginTop: '7px' }}></div>
-                    <div>
-                      <strong style={{ color: 'var(--gray-900)' }}>Special Category Requirements:</strong>
-                      <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)' }}>
-                        {rules.requiresDisability && '• Must have Person with Disability (PWD) certificate. '}
-                        {rules.requiresFirstGen && '• Must be a First-Generation Learner. '}
-                        {rules.requiresSportsQuota && '• Must possess Sports Quota achievement certificate.'}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Required Documents Checklist Card */}
             <div className="sc-card" style={{ padding: '24px 28px' }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--primary-blue)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileText size={20} /> Documents Required to Apply
+                <FileText size={20} /> {t('detail.documentsTitle')}
               </h3>
               <p style={{ fontSize: '0.86rem', color: 'var(--gray-600)', marginBottom: '18px' }}>
-                Use this interactive checklist to prepare your documents before filling out the official application portal.
+                {t('detail.checklistHelp')}
               </p>
 
               {/* Document Progress Indicator Bar */}
@@ -313,7 +290,7 @@ const ScholarshipDetail = () => {
                 <div style={{ marginBottom: '18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', fontWeight: 600, color: 'var(--primary-blue)', marginBottom: '6px' }}>
                     <span>
-                      {checkedDocs.length} of {scholarship.documentsRequired.length} documents ready
+                      {t('dashboard.checkedDocs', { count: checkedDocs.length, total: scholarship.documentsRequired.length })}
                     </span>
                     <span>
                       {Math.round((checkedDocs.length / scholarship.documentsRequired.length) * 100)}%
@@ -334,12 +311,13 @@ const ScholarshipDetail = () => {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {scholarship.documentsRequired && scholarship.documentsRequired.length > 0 ? (
-                  scholarship.documentsRequired.map((doc) => {
-                    const isChecked = checkedDocs.includes(doc);
+                  scholarship.documentsRequired.map((docItem) => {
+                    const docText = getLocalizedText(docItem, i18n.language);
+                    const isChecked = checkedDocs.includes(docText) || (typeof docItem === 'string' && checkedDocs.includes(docItem));
                     return (
                       <div
-                        key={doc}
-                        onClick={() => handleToggleDoc(doc)}
+                        key={docText}
+                        onClick={() => handleToggleDoc(docText)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -358,7 +336,7 @@ const ScholarshipDetail = () => {
                           <Square size={18} style={{ color: 'var(--gray-400)', flexShrink: 0 }} />
                         )}
                         <span style={{ fontSize: '0.92rem', color: isChecked ? 'var(--gray-900)' : 'var(--gray-700)', fontWeight: isChecked ? 600 : 400 }}>
-                          {doc}
+                          {docText}
                         </span>
                       </div>
                     );
@@ -386,7 +364,7 @@ const ScholarshipDetail = () => {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginBottom: '4px' }}>Application Deadline</div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginBottom: '4px' }}>{t('detail.deadline')}</div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--gray-900)' }}>
                   {new Date(scholarship.deadline).toLocaleDateString('en-IN', {
                     day: 'numeric',
@@ -399,11 +377,7 @@ const ScholarshipDetail = () => {
               <div style={{ marginBottom: '24px' }}>
                 <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginBottom: '4px' }}>Last Verified Date</div>
                 <div style={{ fontSize: '0.92rem', color: 'var(--gray-700)', fontWeight: 600 }}>
-                  {new Date(scholarship.lastVerifiedDate || Date.now()).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+                  {t('detail.lastVerifiedOn', { date: new Date(scholarship.lastVerifiedDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) })}
                 </div>
               </div>
 
@@ -425,7 +399,7 @@ const ScholarshipDetail = () => {
                   }}
                 >
                   <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
-                  <span>You've applied — track status on official portal</span>
+                  <span>{t('detail.appliedBadge')}</span>
                 </div>
               )}
 
@@ -438,7 +412,7 @@ const ScholarshipDetail = () => {
                   className="btn btn-accent btn-lg"
                   style={{ justifyContent: 'center', width: '100%', textDecoration: 'none' }}
                 >
-                  Apply on Official Website <ExternalLink size={18} />
+                  {t('detail.applyBtn')} <ExternalLink size={18} />
                 </a>
 
                 {scholarship.sourceVerifiedLink && (
@@ -449,7 +423,7 @@ const ScholarshipDetail = () => {
                     className="btn btn-outline btn-md"
                     style={{ justifyContent: 'center', width: '100%', textDecoration: 'none', color: 'var(--primary-blue)', borderColor: 'var(--gray-300)' }}
                   >
-                    View Official Govt Notification <ExternalLink size={15} />
+                    {t('detail.sourceVerified')} <ExternalLink size={15} />
                   </a>
                 )}
               </div>

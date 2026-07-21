@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 const scholarshipSchema = new mongoose.Schema(
   {
     name: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: [true, 'Scholarship name is required'],
-      trim: true,
     },
     issuingBody: {
       type: String,
@@ -30,9 +29,8 @@ const scholarshipSchema = new mongoose.Schema(
       default: false,
     },
     awardAmount: {
-      type: String,
+      type: mongoose.Schema.Types.Mixed,
       required: [true, 'Award amount description is required'],
-      trim: true,
     },
     applicationLink: {
       type: String,
@@ -45,7 +43,7 @@ const scholarshipSchema = new mongoose.Schema(
       trim: true,
     },
     documentsRequired: {
-      type: [String],
+      type: [mongoose.Schema.Types.Mixed],
       default: [],
     },
     eligibilityRules: {

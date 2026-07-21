@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
+import { getLocalizedText } from '../utils/languageUtils';
 import {
   User,
   Mail,
@@ -198,24 +200,24 @@ const Dashboard = () => {
               </div>
               <div>
                 <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '4px' }}>
-                  Welcome back, {studentName}!
+                  {t('home.welcomeBackTitle', { name: studentName })}
                 </h1>
                 <p style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '0.95rem' }}>
-                  Student Dashboard & Scholarship Portal
+                  {t('dashboard.title')}
                 </p>
               </div>
             </div>
 
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <Link to="/profile" className="btn btn-accent btn-sm">
-                <Edit3 size={15} /> Edit Profile
+                <Edit3 size={15} /> {t('dashboard.editProfile')}
               </Link>
               <button
                 onClick={logout}
                 className="btn btn-outline btn-sm"
                 style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.4)' }}
               >
-                Sign Out
+                {t('nav.logout')}
               </button>
             </div>
           </div>
@@ -232,7 +234,7 @@ const Dashboard = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Sparkles size={20} style={{ color: 'var(--accent-orange)' }} />
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-blue)' }}>
-                  Profile Completeness
+                  {t('dashboard.completenessTitle')}
                 </h3>
               </div>
               <span
@@ -270,12 +272,10 @@ const Dashboard = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.86rem', color: 'var(--gray-600)' }}>
               <span>
-                {completeness < 100
-                  ? `Fill remaining fields to maximize scholarship eligibility matching.`
-                  : `Your profile is 100% complete! Ready for automatic scholarship matching.`}
+                {t('profile.bannerText', { percent: completeness })}
               </span>
               <Link to="/profile" style={{ fontWeight: 600, color: 'var(--primary-blue)' }}>
-                Update Profile →
+                {t('scholarships.updateProfileNow')}
               </Link>
             </div>
           </div>
@@ -298,17 +298,17 @@ const Dashboard = () => {
                 <AlertCircle size={24} style={{ color: 'var(--accent-orange-dark)', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontWeight: 700, color: 'var(--primary-blue)', fontSize: '0.98rem' }}>
-                    Complete your profile to see scholarships you're eligible for
+                    {t('scholarships.tabUncertain')}
                   </div>
                   <div style={{ fontSize: '0.86rem', color: 'var(--gray-700)' }}>
-                    Scholarship matching algorithm uses your class, income, category, and domicile state.
+                    {t('scholarships.uncertainNotice')}
                   </div>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Link to="/profile" className="btn btn-accent btn-sm">
-                  Complete Profile <ArrowRight size={14} />
+                  {t('dashboard.completeNow')} <ArrowRight size={14} />
                 </Link>
                 <button
                   onClick={handleDismissBanner}
@@ -324,7 +324,7 @@ const Dashboard = () => {
           {/* Main Grid: Account Details & Profile Summary */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
             
-            {/* Account Details Card (Retained from Step 1) */}
+            {/* Account Details Card */}
             <div className="sc-card">
               <h3
                 style={{
@@ -337,13 +337,13 @@ const Dashboard = () => {
                   gap: '8px',
                 }}
               >
-                <User size={20} /> Account Details
+                <User size={20} /> {t('dashboard.accountDetails')}
               </h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.92rem' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>FULL NAME</span>
+                    <span style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('profile.fullName').toUpperCase()}</span>
                     {!isEditingName && (
                       <button
                         onClick={() => setIsEditingName(true)}
@@ -358,7 +358,7 @@ const Dashboard = () => {
                           fontWeight: 600,
                         }}
                       >
-                        <Edit3 size={13} /> Edit
+                        <Edit3 size={13} /> {t('dashboard.editProfile')}
                       </button>
                     )}
                   </div>
@@ -385,7 +385,7 @@ const Dashboard = () => {
                           style={{ padding: '4px 10px', fontSize: '0.8rem' }}
                           disabled={savingName}
                         >
-                          {savingName ? 'Saving...' : 'Save'}
+                          {savingName ? t('profile.saving') : 'Save'}
                         </button>
                         <button
                           onClick={handleCancelNameEdit}
@@ -406,7 +406,7 @@ const Dashboard = () => {
 
                 {user?.email && (
                   <div>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>EMAIL ADDRESS</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.email').toUpperCase()}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Mail size={15} style={{ color: 'var(--primary-blue)' }} />
                       <span>{user.email}</span>
@@ -416,7 +416,7 @@ const Dashboard = () => {
 
                 {user?.phone && (
                   <div>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>PHONE NUMBER</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.phone').toUpperCase()}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Phone size={15} style={{ color: 'var(--primary-blue)' }} />
                       <span>{user.phone}</span>
@@ -446,11 +446,11 @@ const Dashboard = () => {
                     gap: '8px',
                   }}
                 >
-                  <BookOpen size={20} /> Student Profile Summary
+                  <BookOpen size={20} /> {t('dashboard.profileSummary')}
                 </h3>
 
                 <Link to="/profile" className="btn btn-outline btn-sm">
-                  <Edit3 size={14} /> Edit Profile
+                  <Edit3 size={14} /> {t('dashboard.editProfile')}
                 </Link>
               </div>
 
@@ -460,28 +460,28 @@ const Dashboard = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.9rem' }}>
                   
                   <div style={{ background: 'var(--gray-100)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>CURRENT CLASS</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.classLevel').toUpperCase()}</div>
                     <div style={{ fontWeight: 700, color: 'var(--gray-800)', marginTop: '2px' }}>
                       {profile?.academic?.currentClass || 'Not specified'}
                     </div>
                   </div>
 
                   <div style={{ background: 'var(--gray-100)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>DOMICILE STATE</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.domicile').toUpperCase()}</div>
                     <div style={{ fontWeight: 700, color: 'var(--gray-800)', marginTop: '2px' }}>
                       {profile?.location?.state || 'Not specified'}
                     </div>
                   </div>
 
                   <div style={{ background: 'var(--gray-100)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>SOCIAL CATEGORY</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.category').toUpperCase()}</div>
                     <div style={{ fontWeight: 700, color: 'var(--gray-800)', marginTop: '2px' }}>
                       {profile?.personal?.category || 'Not specified'}
                     </div>
                   </div>
 
                   <div style={{ background: 'var(--gray-100)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>ANNUAL FAMILY INCOME</div>
+                    <div style={{ color: 'var(--gray-500)', fontSize: '0.78rem', fontWeight: 600 }}>{t('dashboard.familyIncome').toUpperCase()}</div>
                     <div style={{ fontWeight: 700, color: 'var(--gray-800)', marginTop: '2px' }}>
                       {profile?.economic?.annualIncome
                         ? `₹${profile.economic.annualIncome.toLocaleString('en-IN')}`
@@ -537,7 +537,7 @@ const Dashboard = () => {
               className="alert alert-info"
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justify: 'space-between',
                 alignItems: 'center',
                 marginBottom: '20px',
                 padding: '14px 20px',
@@ -550,17 +550,17 @@ const Dashboard = () => {
                 <Bell size={22} style={{ color: 'var(--primary-blue)', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontWeight: 700, color: 'var(--primary-blue)', fontSize: '0.94rem' }}>
-                    Enable deadline alerts?
+                    {t('dashboard.alertsBannerTitle')}
                   </div>
                   <div style={{ fontSize: '0.84rem', color: 'var(--gray-700)' }}>
-                    Get instant browser notifications for urgent scholarship deadlines closing within 7 days.
+                    {t('dashboard.alertsBannerDesc')}
                   </div>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <button onClick={handleEnableNotifications} className="btn btn-primary btn-sm">
-                  Enable Alerts
+                  {t('dashboard.enableAlertsBtn')}
                 </button>
                 <button
                   onClick={handleDismissNotifBanner}
@@ -579,12 +579,12 @@ const Dashboard = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Clock size={22} style={{ color: 'var(--accent-orange)' }} />
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-blue)' }}>
-                  Upcoming Deadlines
+                  {t('dashboard.upcomingDeadlines')}
                 </h3>
               </div>
 
               <Link to="/scholarships" style={{ fontWeight: 600, color: 'var(--primary-blue)', fontSize: '0.88rem' }}>
-                View All Schemes →
+                {t('scholarships.tabAll')} →
               </Link>
             </div>
 
@@ -607,18 +607,18 @@ const Dashboard = () => {
                 }}
               >
                 <Clock size={18} style={{ color: 'var(--gray-500)' }} />
-                <span>No urgent deadlines right now — check back soon.</span>
+                <span>{t('dashboard.noDeadlines')}</span>
               </div>
             ) : (
               /* Top 5 Upcoming Deadlines */
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {reminders.slice(0, 5).map((item) => {
                   let badgeStyle = { backgroundColor: '#fef9c3', color: '#854d0e', border: '1px solid #fef08a', fontWeight: 600 };
-                  let badgeText = `${item.daysRemaining} days left`;
+                  let badgeText = t('dashboard.daysLeft', { days: item.daysRemaining });
 
                   if (item.daysRemaining <= 7) {
                     badgeStyle = { backgroundColor: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: 700 };
-                    badgeText = `${item.daysRemaining} ${item.daysRemaining === 1 ? 'day' : 'days'} left (Urgent)`;
+                    badgeText = `${t('dashboard.daysLeft', { days: item.daysRemaining })} (${t('dashboard.urgent')})`;
                   } else if (item.daysRemaining <= 15) {
                     badgeStyle = { backgroundColor: '#ffedd5', color: '#c2410c', border: '1px solid #fed7aa', fontWeight: 600 };
                   }
@@ -643,7 +643,7 @@ const Dashboard = () => {
                           to={`/scholarships/${item._id}`}
                           style={{ fontWeight: 700, color: 'var(--gray-900)', textDecoration: 'none', fontSize: '0.94rem' }}
                         >
-                          {item.name}
+                          {getLocalizedText(item.name, i18n.language)}
                         </Link>
                         <div style={{ fontSize: '0.8rem', color: 'var(--gray-500)', marginTop: '2px' }}>
                           Issuing Body: {item.issuingBody} • State: {item.state}
@@ -660,7 +660,7 @@ const Dashboard = () => {
                           className="btn btn-outline btn-sm"
                           style={{ padding: '4px 10px', fontSize: '0.8rem' }}
                         >
-                          View Details →
+                          {t('dashboard.viewDetails')} →
                         </Link>
                       </div>
                     </div>
@@ -676,12 +676,12 @@ const Dashboard = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Award size={22} style={{ color: 'var(--accent-orange)' }} />
                 <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--primary-blue)' }}>
-                  Your Application Tracker
+                  {t('dashboard.applicationTracker')}
                 </h3>
               </div>
 
               <Link to="/scholarships" style={{ fontWeight: 600, color: 'var(--primary-blue)', fontSize: '0.88rem' }}>
-                Explore Scholarships →
+                {t('dashboard.browseMatchedBtn')} →
               </Link>
             </div>
 
@@ -702,13 +702,10 @@ const Dashboard = () => {
               >
                 <Award size={36} style={{ color: 'var(--gray-400)', marginBottom: '10px' }} />
                 <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--gray-800)', marginBottom: '4px' }}>
-                  Start exploring scholarships to track your progress here
+                  {t('dashboard.noChecklists')}
                 </div>
-                <p style={{ fontSize: '0.86rem', color: 'var(--gray-500)', marginBottom: '16px' }}>
-                  Check off required documents and track your official application submissions in one place.
-                </p>
-                <Link to="/scholarships" className="btn btn-accent btn-sm">
-                  Browse Scholarships
+                <Link to="/scholarships" className="btn btn-accent btn-sm" style={{ marginTop: '12px' }}>
+                  {t('dashboard.browseMatchedBtn')}
                 </Link>
               </div>
             ) : (
@@ -733,21 +730,21 @@ const Dashboard = () => {
                         to={`/scholarships/${item.scholarshipId}`}
                         style={{ fontWeight: 700, color: 'var(--gray-900)', textDecoration: 'none', fontSize: '0.95rem' }}
                       >
-                        {item.scholarshipName || 'Scholarship Scheme'}
+                        {getLocalizedText(item.scholarshipName, i18n.language) || 'Scholarship Scheme'}
                       </Link>
                       <div style={{ fontSize: '0.82rem', color: 'var(--gray-500)', marginTop: '2px' }}>
-                        Document Readiness: <strong>{item.checkedDocuments?.length || 0} / {item.totalDocumentsRequired || 5} ready</strong>
+                        {t('dashboard.checkedDocs', { count: item.checkedDocuments?.length || 0, total: item.totalDocumentsRequired || 5 })}
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {item.applied ? (
                         <span className="badge badge-verified" style={{ fontSize: '0.8rem' }}>
-                          <ShieldCheck size={13} /> Applied
+                          <ShieldCheck size={13} /> {t('dashboard.statusApplied')}
                         </span>
                       ) : (
                         <span className="badge" style={{ backgroundColor: 'var(--gray-200)', color: 'var(--gray-700)', fontSize: '0.8rem' }}>
-                          In Progress
+                          {t('dashboard.statusInPrep')}
                         </span>
                       )}
 
@@ -756,7 +753,7 @@ const Dashboard = () => {
                         className="btn btn-outline btn-sm"
                         style={{ padding: '4px 10px', fontSize: '0.8rem' }}
                       >
-                        Manage →
+                        {t('dashboard.viewDetails')} →
                       </Link>
                     </div>
                   </div>

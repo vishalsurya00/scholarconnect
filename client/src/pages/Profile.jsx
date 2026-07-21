@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
 import {
@@ -276,10 +277,10 @@ const Profile = () => {
         {/* Page Header */}
         <div style={{ marginBottom: '28px', textAlign: 'center' }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '8px' }}>
-            Student Profile Setup
+            {t('profile.headerTitle')}
           </h1>
           <p style={{ color: 'var(--gray-600)', fontSize: '0.95rem' }}>
-            Complete your progressive profile to get personalized scholarship match recommendations.
+            {t('profile.headerSubtitle')}
           </p>
         </div>
 
@@ -287,7 +288,7 @@ const Profile = () => {
         <div className="sc-card" style={{ marginBottom: '24px', padding: '20px 24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
             <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--primary-blue)' }}>
-              Profile Completeness
+              {t('dashboard.completenessTitle')}
             </span>
             <span style={{ fontWeight: 800, fontSize: '1rem', color: completeness > 70 ? 'var(--success-green)' : 'var(--accent-orange-dark)' }}>
               {completeness}%
@@ -342,7 +343,7 @@ const Profile = () => {
               <span className="badge badge-verified" style={{ width: '24px', height: '24px', borderRadius: '50%', justifyContent: 'center', padding: 0 }}>
                 1
               </span>
-              <span>Step 1: Quick Match</span>
+              <span>{t('profile.step1')}</span>
             </div>
 
             <div
@@ -362,7 +363,7 @@ const Profile = () => {
               <span className="badge badge-days-left" style={{ width: '24px', height: '24px', borderRadius: '50%', justifyContent: 'center', padding: 0 }}>
                 2
               </span>
-              <span>Step 2: Details</span>
+              <span>{t('profile.step2')}</span>
             </div>
 
             <div
@@ -382,7 +383,7 @@ const Profile = () => {
               <span className="badge badge-featured" style={{ width: '24px', height: '24px', borderRadius: '50%', justifyContent: 'center', padding: 0 }}>
                 3
               </span>
-              <span>Step 3: Special Categories</span>
+              <span>{t('profile.step3')}</span>
             </div>
           </div>
 
@@ -696,7 +697,7 @@ const Profile = () => {
             <div>
               {currentStep > 1 && (
                 <button type="button" onClick={handleBack} className="btn btn-secondary" disabled={saving}>
-                  <ArrowLeft size={16} /> Back
+                  <ArrowLeft size={16} /> {t('profile.back')}
                 </button>
               )}
             </div>
@@ -709,7 +710,7 @@ const Profile = () => {
                 disabled={saving}
               >
                 <Save size={16} />
-                <span>{saving ? 'Saving...' : 'Save & Continue Later'}</span>
+                <span>{saving ? t('profile.saving') : t('profile.saveAndContinue')}</span>
               </button>
 
               {currentStep < 3 ? (
@@ -719,7 +720,7 @@ const Profile = () => {
                   className="btn btn-primary"
                   disabled={saving}
                 >
-                  <span>Next Step</span>
+                  <span>{t('profile.saveAndContinue')}</span>
                   <ArrowRight size={16} />
                 </button>
               ) : (
@@ -732,7 +733,7 @@ const Profile = () => {
                   disabled={saving}
                 >
                   <Sparkles size={16} />
-                  <span>{saving ? 'Saving...' : 'Complete Profile'}</span>
+                  <span>{saving ? t('profile.saving') : t('profile.submitProfile')}</span>
                 </button>
               )}
             </div>

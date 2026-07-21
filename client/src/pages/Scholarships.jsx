@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../config';
+import { getLocalizedText } from '../utils/languageUtils';
 
 const INDIAN_STATES = [
   'ALL',
@@ -694,7 +695,7 @@ const Scholarships = () => {
                       flexGrow: 0,
                     }}
                   >
-                    {item.name}
+                    {getLocalizedText(item.name, i18n.language)}
                   </h3>
 
                   {/* Award Amount */}
@@ -703,7 +704,7 @@ const Scholarships = () => {
                       Award Benefit
                     </div>
                     <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--primary-blue)' }}>
-                      {item.awardAmount}
+                      {getLocalizedText(item.awardAmount, i18n.language)}
                     </div>
                   </div>
 
