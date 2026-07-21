@@ -1,33 +1,122 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ShieldCheck, Clock, Award, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Search, ShieldCheck, Clock, Award, Sparkles, CheckCircle2, ArrowRight, UserCheck, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+  const { isAuthenticated, user } = useAuth();
+  const studentName = user?.fullName ? user.fullName.split(' ')[0] : 'Student';
+
   return (
     <div>
       {/* Hero Section */}
       <section className="bg-hero" style={{ padding: '60px 0 70px', textAlignment: 'center' }}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <span className="badge badge-featured" style={{ marginBottom: '16px', background: 'rgba(46, 158, 91, 0.15)', color: '#4ade80', borderColor: 'rgba(74, 222, 128, 0.3)' }}>
-            <Sparkles size={14} /> India's Dedicated Scholarship Portal
-          </span>
+          {isAuthenticated ? (
+            <>
+              <span
+                className="badge badge-featured"
+                style={{
+                  marginBottom: '16px',
+                  background: 'rgba(46, 158, 91, 0.15)',
+                  color: '#4ade80',
+                  borderColor: 'rgba(74, 222, 128, 0.3)',
+                }}
+              >
+                <Sparkles size={14} /> Welcome Back, {studentName}
+              </span>
 
-          <h1 style={{ fontSize: '2.8rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '20px', maxWidth: '800px', margin: '0 auto 20px' }}>
-            Discover Verified Scholarships tailored for <span style={{ color: 'var(--accent-orange)' }}>Every Indian Student</span>
-          </h1>
+              <h1
+                style={{
+                  fontSize: '2.8rem',
+                  fontWeight: 800,
+                  lineHeight: 1.2,
+                  marginBottom: '20px',
+                  maxWidth: '800px',
+                  margin: '0 auto 20px',
+                }}
+              >
+                Welcome back, <span style={{ color: 'var(--accent-orange)' }}>{user?.fullName || 'Student'}</span>!
+              </h1>
 
-          <p style={{ fontSize: '1.15rem', color: 'rgba(255,255,255,0.85)', maxWidth: '640px', margin: '0 auto 32px', lineHeight: 1.6 }}>
-            From Class 1 to Post-Graduate degrees — search, verify eligibility, and get direct government and trust application links.
-          </p>
+              <p
+                style={{
+                  fontSize: '1.15rem',
+                  color: 'rgba(255,255,255,0.85)',
+                  maxWidth: '640px',
+                  margin: '0 auto 32px',
+                  lineHeight: 1.6,
+                }}
+              >
+                Continue exploring verified scholarships matched specifically to your academic profile and criteria.
+              </p>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
-            <Link to="/register" className="btn btn-accent btn-lg">
-              Get Started Free <ArrowRight size={18} />
-            </Link>
-            <Link to="/login" className="btn btn-outline btn-lg" style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)' }}>
-              Sign In to Account
-            </Link>
-          </div>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <Link to="/dashboard" className="btn btn-accent btn-lg">
+                  <LayoutDashboard size={18} /> View Matched Scholarships
+                </Link>
+                <Link
+                  to="/profile"
+                  className="btn btn-outline btn-lg"
+                  style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)' }}
+                >
+                  <UserCheck size={18} /> My Profile
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <span
+                className="badge badge-featured"
+                style={{
+                  marginBottom: '16px',
+                  background: 'rgba(46, 158, 91, 0.15)',
+                  color: '#4ade80',
+                  borderColor: 'rgba(74, 222, 128, 0.3)',
+                }}
+              >
+                <Sparkles size={14} /> India's Dedicated Scholarship Portal
+              </span>
+
+              <h1
+                style={{
+                  fontSize: '2.8rem',
+                  fontWeight: 800,
+                  lineHeight: 1.2,
+                  marginBottom: '20px',
+                  maxWidth: '800px',
+                  margin: '0 auto 20px',
+                }}
+              >
+                Discover Verified Scholarships tailored for <span style={{ color: 'var(--accent-orange)' }}>Every Indian Student</span>
+              </h1>
+
+              <p
+                style={{
+                  fontSize: '1.15rem',
+                  color: 'rgba(255,255,255,0.85)',
+                  maxWidth: '640px',
+                  margin: '0 auto 32px',
+                  lineHeight: 1.6,
+                }}
+              >
+                From Class 1 to Post-Graduate degrees — search, verify eligibility, and get direct government and trust application links.
+              </p>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <Link to="/register" className="btn btn-accent btn-lg">
+                  Get Started Free <ArrowRight size={18} />
+                </Link>
+                <Link
+                  to="/login"
+                  className="btn btn-outline btn-lg"
+                  style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.5)' }}
+                >
+                  Sign In to Account
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
