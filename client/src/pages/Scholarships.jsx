@@ -65,6 +65,7 @@ const CATEGORY_OPTIONS = ['ALL', 'SC', 'ST', 'OBC', 'General', 'EWS', 'Minority'
 
 const Scholarships = () => {
   const { isAuthenticated, token } = useAuth();
+  const { t, i18n } = useTranslation();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

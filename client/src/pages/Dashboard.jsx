@@ -25,6 +25,7 @@ import {
 
 const Dashboard = () => {
   const { user, token, logout, updateName } = useAuth();
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checklists, setChecklists] = useState([]);

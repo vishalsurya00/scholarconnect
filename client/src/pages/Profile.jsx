@@ -73,6 +73,7 @@ const CLASS_OPTIONS = [
 
 const Profile = () => {
   const { token } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState(1);
