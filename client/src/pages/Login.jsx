@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, AlertCircle, ArrowRight, GraduationCap, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, AlertCircle, ArrowRight, GraduationCap, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,12 +9,27 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loginSlowNotice, setLoginSlowNotice] = useState(false);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => {
+        setLoginSlowNotice(true);
+      }, 5000);
+    } else {
+      setLoginSlowNotice(false);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [loading]);
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setError('');
 
     if (!identifier.trim()) {
@@ -45,10 +60,58 @@ const Login = () => {
         </div>
 
         <div className="auth-body">
+          {loginSlowNotice && loading && (
+            <div
+              style={{
+                marginBottom: '16px',
+                fontSize: '0.85rem',
+                color: '#d97706',
+                backgroundColor: '#fef3c7',
+                padding: '10px 14px',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <div>Waking up the server, this may take up to 30 seconds on first load</div>
+            </div>
+          )}
+
           {error && (
-            <div className="alert alert-error">
-              <AlertCircle size={20} style={{ flexShrink: 0 }} />
-              <div>{error}</div>
+            <div
+              className="alert alert-error"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justify: 'space-between',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                <AlertCircle size={20} style={{ flexShrink: 0 }} />
+                <div>{error}</div>
+              </div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: '1px solid currentColor',
+                  color: 'inherit',
+                  borderRadius: '4px',
+                  padding: '4px 10px',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <RefreshCw size={14} /> Retry
+              </button>
             </div>
           )}
 
@@ -123,13 +186,13 @@ const Login = () => {
               disabled={loading}
               style={{ marginTop: '10px' }}
             >
-              {loading ? t('auth.signingIn') : t('auth.signInBtn')}
+              {loading ? t('auth.signingIn') : (error ? 'Retry' : t('auth.signInBtn'))}
               {!loading && <ArrowRight size={18} />}
             </button>
           </form>
 
           <div className="auth-footer">
-            {t('auth.noAccount')}{' '}
+            {t('auth.alreadyHaveAccount') ? t('auth.noAccount') : 'Don\'t have an account?'}{' '}
             <Link to="/register" style={{ fontWeight: 600 }}>
               {t('auth.registerLink')}
             </Link>
